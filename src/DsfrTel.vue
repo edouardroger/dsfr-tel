@@ -26,9 +26,9 @@
       <input v-model="phoneNumber" @input="formatPhoneNumber" :placeholder="placeholder" class="fr-input" type="tel"
         aria-label="Votre numéro de téléphone" id="tel-input" aria-describedby="tel-input-message" />
     </div>
+    <p v-if="errorMessage" class="fr-fieldset__element fr-message fr-message--error" id="tel-input-message">{{
+      errorMessage }}</p>
   </fieldset>
-
-  <p v-if="errorMessage" class="fr-message fr-message--error" id="tel-input-message">{{ errorMessage }}</p>
 </template>
 
 <script lang="ts" setup>
