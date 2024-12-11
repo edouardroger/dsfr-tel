@@ -1,7 +1,7 @@
 <template>
   <fieldset class="fr-fieldset" :class="{ 'fr-fieldset--success': !errorMessage, 'fr-fieldset--error': errorMessage }">
     <legend class="fr-fieldset__legend">{{ fieldsetLegend }}</legend>
-    <div class="fr-fieldset__element fr-fieldset__element--inline">
+    <div class="fr-fieldset__element fr-fieldset__element--inline fr-fieldset__element--tel">
       <button type="button" class="fr-select" aria-haspopup="listbox" :aria-expanded="isDropdownOpen"
         @click="toggleDropdown" ref="dropdownButton"
         :title="'Modifier le pays sélectionné : ' + getSelectedCountry.name">
@@ -22,7 +22,8 @@
         </li>
       </ul>
     </div>
-    <div class="fr-fieldset__element fr-fieldset__element--inline">
+    <div
+      class="fr-fieldset__element fr-fieldset__element--inline fr-fieldset__element--tel fr-fieldset__element--dialcode">
       <input v-model="phoneNumber" @input="formatPhoneNumber" :placeholder="placeholder" class="fr-input" type="tel"
         aria-label="Votre numéro de téléphone" id="tel-input" aria-describedby="tel-input-message" />
     </div>
@@ -177,6 +178,9 @@ function handleKeydown(event: KeyboardEvent): void {
         isDropdownOpen.value = false;
         dropdownButton.value?.focus();
         break;
+      case 'Tab':
+        isDropdownOpen.value = false
+        break;
     }
   } else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
     toggleDropdown();
@@ -239,5 +243,13 @@ defineExpose({
 
 .highlighted {
   background-color: var(--background-open-blue-france);
+}
+
+.fr-fieldset__element--tel {
+  margin-bottom: .5rem;
+}
+
+.fr-fieldset__element--dialcode {
+  padding-left: 0;
 }
 </style>
