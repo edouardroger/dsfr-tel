@@ -36,7 +36,7 @@
 
 <script lang="ts" setup>
 import { ref, computed, onMounted, onBeforeUnmount, nextTick, PropType } from 'vue';
-import { parsePhoneNumber, getExampleNumber, AsYouType, PhoneNumber, CountryCode, getCountryCallingCode } from 'libphonenumber-js/max';
+import { parsePhoneNumber, getExampleNumber, AsYouType, PhoneNumber, CountryCode, getCountryCallingCode, validatePhoneNumberLength } from 'libphonenumber-js/max';
 import examples from 'libphonenumber-js/examples.mobile.json';
 import countriesData from './countries.json';
 import timezoneToCountry from './timezones.json';
@@ -217,8 +217,21 @@ function checkPhoneNumberPresence(): boolean {
 }
 
 function validatePhoneNumberFormat(): boolean {
+  const isLengthValid = validatePhoneNumberLength(phoneNumber.value, selectedCountry.value)
+  if (isLengthValid !== undefined) {
+    const reasonMessages = {
+      TOO_SHORT: "Le numéro de téléphone saisi est trop court.",
+      TOO_LONG: "Le numéro est trop long.",
+      INVALID_COUNTRY: "Le code du pays est invalide.",
+      INVALID_LENGTH : "Longueur non valide.",
+      NOT_A_NUMBER : "La valeur saisie n'est pas un numéro."
+    };
+    setErrorMessage(reasonMessages[isLengthValid]);
+    return false;
+  }
   const parsedNumber = getParsedPhoneNumber();
-  if (!parsedNumber || !parsedNumber.isValid()) {
+  if (!parsedNumber) return false;
+  if (!parsedNumber.isValid()) {
     setErrorMessage(props.errorMessages.invalid);
     return false;
   }
@@ -261,10 +274,22 @@ function validatePhoneNumber(): boolean {
   return true;
 }
 
-function getPhoneNumberE164(): string {
-  const parsedNumber = getParsedPhoneNumber();
-  if (!parsedNumber) return '';
-  return parsedNumber.format('E.164');
+function getPhoneNumberFormatted(format: 'E164' | 'NATIONAL' | 'INTERNATIONAL' | 'RFC3966'): string {
+    const parsedNumber = getParsedPhoneNumber();
+    if (!parsedNumber) return '';
+
+    switch (format) {
+        case 'E164':
+            return parsedNumber.format('E.164');
+        case 'NATIONAL':
+            return parsedNumber.formatNational();
+        case 'INTERNATIONAL':
+            return parsedNumber.formatInternational();
+        case 'RFC3966' :
+          return parsedNumber.format("RFC3966")
+        default:
+            return parsedNumber.number;
+    }
 }
 
 function getDefaultCountryFromTimezone(): CountryCode {
@@ -286,7 +311,7 @@ defineExpose({
   validatePhoneNumber,
   phoneNumber,
   selectedCountry,
-  getPhoneNumberE164
+  getPhoneNumberFormatted
 });
 </script>
 
