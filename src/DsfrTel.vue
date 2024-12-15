@@ -140,15 +140,10 @@ function formatPhoneNumber(): void {
 }
 
 function selectCountry(country: Country): void {
-  const dialCode = getCountryCallingCode(country.code);
-  const updatedCountry = { ...country, dialCode };
+  selectedCountry.value = country.code;
 
-  selectedCountry.value = updatedCountry.code;
-  phoneNumber.value = '';
-  errorMessage.value = '';
   closeDropdown();
   highlightedIndex.value = -1;
-
   dropdownButton.value?.focus();
 }
 
@@ -223,8 +218,8 @@ function validatePhoneNumberFormat(): boolean {
       TOO_SHORT: "Le numéro de téléphone saisi est trop court.",
       TOO_LONG: "Le numéro est trop long.",
       INVALID_COUNTRY: "Le code du pays est invalide.",
-      INVALID_LENGTH : "Longueur non valide.",
-      NOT_A_NUMBER : "La valeur saisie n'est pas un numéro."
+      INVALID_LENGTH: "Longueur non valide.",
+      NOT_A_NUMBER: "La valeur saisie n'est pas un numéro."
     };
     setErrorMessage(reasonMessages[isLengthValid]);
     return false;
@@ -275,21 +270,21 @@ function validatePhoneNumber(): boolean {
 }
 
 function getPhoneNumberFormatted(format: 'E164' | 'NATIONAL' | 'INTERNATIONAL' | 'RFC3966'): string {
-    const parsedNumber = getParsedPhoneNumber();
-    if (!parsedNumber) return '';
+  const parsedNumber = getParsedPhoneNumber();
+  if (!parsedNumber) return '';
 
-    switch (format) {
-        case 'E164':
-            return parsedNumber.format('E.164');
-        case 'NATIONAL':
-            return parsedNumber.formatNational();
-        case 'INTERNATIONAL':
-            return parsedNumber.formatInternational();
-        case 'RFC3966' :
-          return parsedNumber.format("RFC3966")
-        default:
-            return parsedNumber.number;
-    }
+  switch (format) {
+    case 'E164':
+      return parsedNumber.format('E.164');
+    case 'NATIONAL':
+      return parsedNumber.formatNational();
+    case 'INTERNATIONAL':
+      return parsedNumber.formatInternational();
+    case 'RFC3966':
+      return parsedNumber.format("RFC3966")
+    default:
+      return parsedNumber.number;
+  }
 }
 
 function getDefaultCountryFromTimezone(): CountryCode {
