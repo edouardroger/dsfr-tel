@@ -52,7 +52,7 @@ describe('DsfrTel.vue', () => {
     expect(button.attributes('title')).toBe('Modifier le pays sélectionné : France');
   });
 
-  it('affiche une erreur si le numéro est incorrect', async () => {
+  it('affiche une erreur si le numéro est trop court', async () => {
     const wrapper = mount(DsfrTel);
     const input = wrapper.get('input[type="tel"]');
 
@@ -61,7 +61,7 @@ describe('DsfrTel.vue', () => {
     // Appel à la méthode de validation via l'instance Vue
     await wrapper.vm.validatePhoneNumber();
 
-    expect(wrapper.text()).toContain('Le numéro renseigné est incorrect');
+    expect(wrapper.text()).toContain('Le numéro de téléphone saisi est trop court');
   });
 
   it('affiche une erreur si le champ est vide', async () => {
@@ -87,7 +87,7 @@ describe('DsfrTel.vue', () => {
     await input.setValue('+33123456789'); // Numéro fixe français
     await wrapper.vm.validatePhoneNumber();
 
-    expect(wrapper.text()).toContain('Le numéro doit être de type Portable');
+    expect(wrapper.text()).toContain('Le numéro doit être de type portable');
   });
 
   it('valide un numéro correct', async () => {
