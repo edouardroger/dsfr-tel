@@ -36,7 +36,7 @@
 
 <script lang="ts" setup>
 import { ref, computed, onMounted, onBeforeUnmount, nextTick, PropType } from 'vue';
-import { parsePhoneNumber, getExampleNumber, AsYouType, PhoneNumber, CountryCode, getCountryCallingCode, validatePhoneNumberLength } from 'libphonenumber-js/max';
+import { parsePhoneNumber, getExampleNumber, AsYouType, PhoneNumber, CountryCode, validatePhoneNumberLength } from 'libphonenumber-js/max';
 import examples from 'libphonenumber-js/examples.mobile.json';
 import countriesData from './countries.json';
 import timezoneToCountry from './timezones.json';
@@ -95,6 +95,8 @@ const phoneNumber = ref<string>('');
 const errorMessage = ref<string>('');
 const isDropdownOpen = ref<boolean>(false);
 const highlightedIndex = ref<number>(-1);
+const searchQuery = ref<string>('');
+const lastKeyPressedTime = ref<number>(0);
 
 const dropdownButton = ref<HTMLButtonElement | null>(null);
 const dropdownMenu = ref<HTMLElement | null>(null);
@@ -143,16 +145,16 @@ function selectCountry(country: Country): void {
   selectedCountry.value = country.code;
 
   closeDropdown();
-  highlightedIndex.value = -1;
+  highlightedIndex.value = countries.findIndex(c => c.code === country.code);
   dropdownButton.value?.focus();
 }
 
 function toggleDropdown(): void {
   isDropdownOpen.value = !isDropdownOpen.value;
   if (isDropdownOpen.value) {
-    highlightedIndex.value = 0;
+    highlightedIndex.value = countries.findIndex(c => c.code === selectedCountry.value);
     nextTick(() => {
-      countryOption.value[0]?.focus();
+      countryOption.value[highlightedIndex.value]?.focus();
     });
   } else {
     closeDropdown();
@@ -163,6 +165,28 @@ function handleKeydown(event: KeyboardEvent): void {
   if (isDropdownOpen.value) {
     event.preventDefault();
     event.stopPropagation();
+
+    const keyPressed = event.key.toLowerCase();
+
+    if (keyPressed.length === 1 && /[a-z]/i.test(keyPressed)) {
+      const currentTime = Date.now();
+      if (currentTime - lastKeyPressedTime.value > 500) {
+        searchQuery.value = '';
+      }
+
+      searchQuery.value += keyPressed;
+
+      const matchingCountries = countries.filter(country =>
+        country.name.toLowerCase().startsWith(searchQuery.value)
+      );
+
+      if (matchingCountries.length > 0) {
+        highlightedIndex.value = countries.findIndex(c => c.code === matchingCountries[0].code);
+        countryOption.value[highlightedIndex.value]?.focus();
+      }
+
+      lastKeyPressedTime.value = currentTime;
+    }
 
     switch (event.key) {
       case 'ArrowDown':
