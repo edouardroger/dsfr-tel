@@ -12,9 +12,10 @@
         <span class="fr-sr-only">Modifier le pays sélectionné {{ getSelectedCountry.name }}</span>
       </button>
     </div>
-    <div class="fr-menu" v-if="isDropdownOpen">
+    <div class="fr-menu fr-menu--tel" v-if="isDropdownOpen">
       <ul role="listbox" tabindex="-1" @keydown="handleKeydown" ref="dropdownMenu"
-        aria-label="Liste de sélection du pays" style="max-height:200px;overflow-y:auto;" class="fr-menu__list">
+        aria-label="Liste de sélection du pays" style="max-height:200px;overflow-y:auto;"
+        class="fr-menu__list fr-menu__list--tel">
         <li v-for="(country, index) in countries" :key="country.code" role="option" @click="selectCountry(country)"
           :aria-selected="country.code === selectedCountry"
           :class="{ 'selected': country.code === selectedCountry, 'highlighted': index === highlightedIndex, 'fr-nav__link': true }"
@@ -431,5 +432,21 @@ defineExpose({
   margin-bottom: .5rem;
   flex: 0 0 13rem;
   padding-left: 0;
+}
+
+.fr-menu--tel {
+  filter: drop-shadow(var(--overlap-shadow));
+  position: absolute;
+  top: 3rem;
+  z-index: 500;
+}
+
+.fr-menu--tel .fr-nav__link {
+  box-shadow: 0 calc(-1rem - 1px) 0 -1rem #ddd
+}
+
+.fr-menu__list--tel {
+  background-color: #fff;
+  box-shadow: 0 0 0 1px rgba(0, 0, 18, .16);
 }
 </style>
