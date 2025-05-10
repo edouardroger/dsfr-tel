@@ -182,6 +182,10 @@ function handlePaste(event: ClipboardEvent): void {
 function selectCountry(country: Country): void {
   selectedCountry.value = country.code;
 
+  // Reformater le numéro avec le nouveau code pays
+  const formatter = new AsYouType(selectedCountry.value);
+  phoneNumber.value = formatter.input(phoneNumber.value);
+
   closeDropdown();
   highlightedIndex.value = countries.findIndex(c => c.code === country.code);
   dropdownButton.value?.focus();
