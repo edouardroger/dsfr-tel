@@ -55,6 +55,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./dist/style.css
-        asset_name: style.css
+        asset_path: ./dist/dsfr-tel.css
+        asset_name: dsfr-tel.css
         asset_content_type: text/css
