@@ -90,6 +90,16 @@ const props = defineProps({
   placeholderPrefix: {
     type: String,
     default: 'Exemple : '
+  },
+  reasonMessages: {
+    type: Object as PropType<Record<string, string>>,
+    default: () => ({
+      TOO_SHORT: "Le numéro de téléphone saisi est trop court.",
+      TOO_LONG: "Le numéro est trop long.",
+      INVALID_COUNTRY: "Le code du pays est invalide.",
+      INVALID_LENGTH: "Longueur non valide.",
+      NOT_A_NUMBER: "La valeur saisie n'est pas un numéro."
+    })
   }
 });
 
@@ -303,14 +313,7 @@ function checkPhoneNumberPresence(): boolean {
 function validatePhoneNumberFormat(): boolean {
   const isLengthValid = validatePhoneNumberLength(phoneNumber.value, selectedCountry.value)
   if (isLengthValid !== undefined) {
-    const reasonMessages = {
-      TOO_SHORT: "Le numéro de téléphone saisi est trop court.",
-      TOO_LONG: "Le numéro est trop long.",
-      INVALID_COUNTRY: "Le code du pays est invalide.",
-      INVALID_LENGTH: "Longueur non valide.",
-      NOT_A_NUMBER: "La valeur saisie n'est pas un numéro."
-    };
-    setErrorMessage(reasonMessages[isLengthValid]);
+    setErrorMessage(props.reasonMessages[isLengthValid]);
     return false;
   }
   const parsedNumber = getParsedPhoneNumber();
