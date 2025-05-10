@@ -1,7 +1,10 @@
 <template>
-  <fieldset class="fr-fieldset" :class="{ 'fr-fieldset--success': !errorMessage, 'fr-fieldset--error': errorMessage }">
-    <legend class="fr-fieldset__legend">{{ fieldsetLegend }}</legend>
-    <div class="fr-fieldset__element fr-fieldset__element--inline fr-fieldset__element--tel">
+  <fieldset class="fr-fieldset" :class="{ 'fr-fieldset--error': errorMessage }">
+    <legend class="fr-fieldset__legend">
+      {{ fieldsetLegend }}
+      <span class="fr-hint-text">{{ computedHint }}</span>
+    </legend>
+    <div class="fr-fieldset__element fr-fieldset__element--inline fr-fieldset__element--dialcode">
       <button type="button" class="fr-select" aria-haspopup="listbox" :aria-expanded="isDropdownOpen"
         @click="toggleDropdown" @keydown="onButtonKeydown" ref="dropdownButton"
         :title="'Modifier le pays sélectionné : ' + getSelectedCountry.name">
@@ -22,8 +25,7 @@
         </li>
       </ul>
     </div>
-    <div
-      class="fr-fieldset__element fr-fieldset__element--inline fr-fieldset__element--tel fr-fieldset__element--dialcode">
+    <div class="fr-fieldset__element fr-fieldset__element--inline fr-fieldset__element--tel">
       <input v-model="phoneNumber" @input="formatPhoneNumber" @paste="handlePaste" :placeholder="placeholder"
         class="fr-input" type="tel" aria-label="Votre numéro de téléphone" id="tel-input"
         aria-describedby="tel-input-message" ref="telInput" autocomplete="tel-national" />
@@ -89,7 +91,7 @@ const props = defineProps({
   },
   placeholderPrefix: {
     type: String,
-    default: 'Exemple : '
+    default: 'Ex. : '
   },
   reasonMessages: {
     type: Object as PropType<Record<string, string>>,
@@ -100,6 +102,10 @@ const props = defineProps({
       INVALID_LENGTH: "Longueur non valide.",
       NOT_A_NUMBER: "La valeur saisie n'est pas un numéro."
     })
+  },
+  hint: {
+    type: String,
+    default: ''
   }
 });
 
@@ -147,6 +153,12 @@ const getSelectedCountry = computed(() => {
 const placeholder = computed(() => {
   const example = getExampleNumber(selectedCountry.value, examples);
   return example ? `${props.placeholderPrefix}${example.formatNational()}` : '';
+});
+
+const computedHint = computed(() => {
+  const example = getExampleNumber(selectedCountry.value, examples);
+  const defaultHint = example ? `Format : ${example.formatNational()}` : '';
+  return props.hint || defaultHint;
 });
 
 function formatPhoneNumber(): void {
@@ -417,9 +429,7 @@ defineExpose({
 
 .fr-fieldset__element--tel {
   margin-bottom: .5rem;
-}
-
-.fr-fieldset__element--dialcode {
+  flex: 0 0 13rem;
   padding-left: 0;
 }
 </style>

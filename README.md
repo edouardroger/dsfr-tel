@@ -68,6 +68,10 @@ Le composant accepte les paramètres suivants via des `props` :
   }
   ```
 
+- **hint** (string)  
+  Indication sur le format attendu  
+  *Default :* `"Format : X"` où **X** est un exemple de format au format national, fonction du pays sélectionné.
+
 ## Méthodes
 
 Le composant expose plusieurs méthodes :
