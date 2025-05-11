@@ -420,10 +420,7 @@ defineExpose({
 </script>
 
 <style scoped>
-.selected {
-  background-color: var(--background-open-blue-france);
-}
-
+.selected,
 .highlighted {
   background-color: var(--background-open-blue-france);
 }
@@ -442,11 +439,11 @@ defineExpose({
 }
 
 .fr-menu--tel .fr-nav__link {
-  box-shadow: 0 calc(-1rem - 1px) 0 -1rem #ddd
+  box-shadow: 0 calc(-1rem - 1px) 0 -1rem var(--border-default-grey)
 }
 
 .fr-menu__list--tel {
-  background-color: #fff;
+  background-color: var(--background-overlap-grey);
   box-shadow: 0 0 0 1px rgba(0, 0, 18, .16);
 }
 </style>
