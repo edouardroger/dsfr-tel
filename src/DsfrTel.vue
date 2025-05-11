@@ -4,23 +4,24 @@
       {{ fieldsetLegend }}
       <span class="fr-hint-text">{{ computedHint }}</span>
     </legend>
-    <div class="fr-fieldset__element fr-fieldset__element--inline fr-fieldset__element--dialcode">
-      <button type="button" class="fr-select" aria-haspopup="listbox" :aria-expanded="isDropdownOpen"
-        @click="toggleDropdown" @keydown="onButtonKeydown" ref="dropdownButton"
+    <div class="fr-fieldset__element fr-fieldset__element--inline fr-fieldset--dialcode">
+      <!-- Div focusable servant de combobox -->
+      <div class="fr-select" ref="comboboxRef" role="combobox" tabindex="0" aria-haspopup="listbox"
+        :aria-controls="'fr-country-listbox-' + uid" :aria-expanded="isDropdownOpen"
+        :aria-activedescendant="activeDescendant" @click="toggleDropdown" @keydown="onComboboxKeydown"
         :title="'Modifier le pays sélectionné : ' + getSelectedCountry.name">
         <span aria-hidden="true" class="flag-indicatif">{{ getSelectedCountry.flag }}</span>
         <span class="fr-sr-only">Modifier le pays sélectionné {{ getSelectedCountry.name }}</span>
-      </button>
+      </div>
     </div>
     <div class="fr-menu fr-menu--tel" v-if="isDropdownOpen">
-      <ul role="listbox" tabindex="-1" @keydown="handleKeydown" ref="dropdownMenu"
+      <ul :id="'fr-country-listbox-' + uid" role="listbox" tabindex="-1" @keydown="handleKeydown" ref="dropdownMenu"
         aria-label="Liste de sélection du pays" style="max-height:200px;overflow-y:auto;"
         class="fr-menu__list fr-menu__list--tel">
         <li v-for="(country, index) in countries" :key="country.code" role="option" @click="selectCountry(country)"
-          :aria-selected="country.code === selectedCountry"
-          :class="{ 'selected': country.code === selectedCountry, 'highlighted': index === highlightedIndex, 'fr-nav__link': true }"
+          :aria-selected="country.code === selectedCountry ? 'true' : 'false'" :class="{ 'fr-nav__link': true }"
           @mouseover="highlightedIndex = index" @mouseleave="highlightedIndex = -1" ref="countryOption"
-          :tabindex="index === highlightedIndex ? 0 : -1">
+          :id="'fr-country-option-' + uid + '-' + country.code" :tabindex="index === highlightedIndex ? 0 : -1">
           <span aria-hidden="true" class="flag-indicatif">{{ country.flag }}</span>
           {{ country.name }} (+{{ country.dialCode }})
         </li>
@@ -31,19 +32,21 @@
         class="fr-input" type="tel" aria-label="Votre numéro de téléphone" id="tel-input"
         aria-describedby="tel-input-message" ref="telInput" autocomplete="tel-national" />
     </div>
-
-    <p v-if="errorMessage" class="fr-fieldset__element fr-message fr-message--error" id="tel-input-message">{{
-      errorMessage }}
+    <p v-if="errorMessage" class="fr-fieldset__element fr-message fr-message--error" id="tel-input-message">
+      {{ errorMessage }}
     </p>
   </fieldset>
 </template>
 
 <script lang="ts" setup>
+// Motif de conception ARIA suivi : https://www.w3.org/WAI/ARIA/apg/patterns/combobox/examples/combobox-select-only/
 import { ref, computed, onMounted, onBeforeUnmount, nextTick, PropType } from 'vue';
 import { parsePhoneNumber, getExampleNumber, AsYouType, PhoneNumber, CountryCode, validatePhoneNumberLength } from 'libphonenumber-js/max';
 import examples from 'libphonenumber-js/examples.mobile.json';
 import countriesData from './countries.json';
 import timezoneToCountry from './timezones.json';
+
+const uid = Math.random().toString(36).substr(2, 9);
 
 const countries: Country[] = countriesData.map((country: any) => ({
   code: country.code as CountryCode,
@@ -64,7 +67,7 @@ type ErrorMessages = {
   invalid: string;
   incorrectType: string;
   unknown: string;
-  parse: string
+  parse: string;
 };
 
 type TimezoneToCountry = Record<string, string>;
@@ -107,6 +110,10 @@ const props = defineProps({
   hint: {
     type: String,
     default: ''
+  },
+  required: {
+    type: Boolean,
+    default: false
   }
 });
 
@@ -115,13 +122,11 @@ const phoneNumber = ref<string>('');
 const errorMessage = ref<string>('');
 const isDropdownOpen = ref<boolean>(false);
 const highlightedIndex = ref<number>(-1);
-const searchQuery = ref<string>('');
-const lastKeyPressedTime = ref<number>(0);
 
-const dropdownButton = ref<HTMLButtonElement | null>(null);
 const dropdownMenu = ref<HTMLElement | null>(null);
 const countryOption = ref<HTMLElement[]>([]);
 const telInput = ref<HTMLInputElement | null>(null);
+const comboboxRef = ref<HTMLElement | null>(null);
 
 const numberTypeLabels: Record<string, string> = {
   'MOBILE': 'Portable',
@@ -143,11 +148,11 @@ const numberTypeLabels: Record<string, string> = {
 };
 
 const getSelectedCountry = computed(() => {
-  return countries.find((country) => country.code === selectedCountry.value) || {
+  return countries.find(country => country.code === selectedCountry.value) || {
     code: 'FR',
     name: 'France',
     dialCode: '33',
-    flag: '🇫🇷',
+    flag: '🇫🇷'
   };
 });
 
@@ -158,27 +163,30 @@ const placeholder = computed(() => {
 
 const computedHint = computed(() => {
   const example = getExampleNumber(selectedCountry.value, examples);
-  const defaultHint = example ? `Format : ${example.formatNational()}` : '';
+  const defaultHint = example ? `Au format national (ex : ${example.formatNational()})` : '';
   return props.hint || defaultHint;
+});
+
+const activeDescendant = computed(() => {
+  if (isDropdownOpen.value && highlightedIndex.value >= 0 && countries[highlightedIndex.value]) {
+    return 'fr-country-option-' + uid + '-' + countries[highlightedIndex.value].code;
+  }
+  return '';
 });
 
 function formatPhoneNumber(): void {
   if (phoneNumber.value.startsWith('+')) {
     try {
-      // On essaie de parser le numéro en international
       const parsedNum = parsePhoneNumber(phoneNumber.value);
       if (parsedNum && parsedNum.country) {
-        // Met à jour le pays sélectionné
         selectedCountry.value = parsedNum.country;
-        // Reformate en format national
         phoneNumber.value = parsedNum.formatNational();
         return;
       }
     } catch (error) {
-      // En cas d'erreur, on passe au formatage habituel
+      // En cas d'erreur, on continue le formatage habituel
     }
   }
-  // Formatage en fonction du pays sélectionné
   const formatter = new AsYouType(selectedCountry.value);
   phoneNumber.value = formatter.input(phoneNumber.value);
 }
@@ -187,21 +195,16 @@ function handlePaste(event: ClipboardEvent): void {
   event.preventDefault();
   const pastedText = event.clipboardData?.getData('text/plain') || '';
   phoneNumber.value = pastedText;
-  nextTick(() => {
-    formatPhoneNumber();
-  });
+  nextTick(() => formatPhoneNumber());
 }
 
 function selectCountry(country: Country): void {
   selectedCountry.value = country.code;
-
-  // Reformater le numéro avec le nouveau code pays
   const formatter = new AsYouType(selectedCountry.value);
   phoneNumber.value = formatter.input(phoneNumber.value);
-
   closeDropdown();
+  comboboxRef.value?.focus();
   highlightedIndex.value = countries.findIndex(c => c.code === country.code);
-  dropdownButton.value?.focus();
 }
 
 function toggleDropdown(): void {
@@ -213,37 +216,47 @@ function toggleDropdown(): void {
     });
   } else {
     closeDropdown();
+    comboboxRef.value?.focus();
   }
 }
 
-function onButtonKeydown(event: KeyboardEvent): void {
+function onComboboxKeydown(event: KeyboardEvent): void {
   switch (event.key) {
     case 'ArrowDown':
-    case 'ArrowUp':
-    case ' ':
       if (!isDropdownOpen.value) {
         toggleDropdown();
-        highlightedIndex.value = countries.findIndex(c => c.code === selectedCountry.value);
-        nextTick(() => {
-          countryOption.value[highlightedIndex.value]?.focus();
-        });
+        highlightedIndex.value = 0;
+        nextTick(() => countryOption.value[highlightedIndex.value]?.focus());
+      } else {
+        highlightedIndex.value = (highlightedIndex.value + 1) % countries.length;
+        nextTick(() => countryOption.value[highlightedIndex.value]?.focus());
+      }
+      event.preventDefault();
+      break;
+    case 'ArrowUp':
+      if (!isDropdownOpen.value) {
+        toggleDropdown();
+        highlightedIndex.value = countries.length - 1;
+        nextTick(() => countryOption.value[highlightedIndex.value]?.focus());
+      } else {
+        highlightedIndex.value = (highlightedIndex.value - 1 + countries.length) % countries.length;
+        nextTick(() => countryOption.value[highlightedIndex.value]?.focus());
       }
       event.preventDefault();
       break;
     case 'Enter':
-      if (!isDropdownOpen.value) {
+    case ' ':
+      if (isDropdownOpen.value && highlightedIndex.value >= 0) {
+        selectCountry(countries[highlightedIndex.value]);
+      } else {
         toggleDropdown();
-        highlightedIndex.value = countries.findIndex(c => c.code === selectedCountry.value);
-        nextTick(() => {
-          countryOption.value[highlightedIndex.value]?.focus();
-        });
       }
       event.preventDefault();
       break;
     case 'Escape':
       if (isDropdownOpen.value) {
         closeDropdown();
-        dropdownButton.value?.focus();
+        comboboxRef.value?.focus();
       }
       event.preventDefault();
       break;
@@ -256,37 +269,14 @@ function handleKeydown(event: KeyboardEvent): void {
   if (isDropdownOpen.value) {
     event.preventDefault();
     event.stopPropagation();
-
-    const keyPressed = event.key.toLowerCase();
-
-    if (keyPressed.length === 1 && /[a-z]/i.test(keyPressed)) {
-      const currentTime = Date.now();
-      if (currentTime - lastKeyPressedTime.value > 500) {
-        searchQuery.value = '';
-      }
-
-      searchQuery.value += keyPressed;
-
-      const matchingCountries = countries.filter(country =>
-        country.name.toLowerCase().startsWith(searchQuery.value)
-      );
-
-      if (matchingCountries.length > 0) {
-        highlightedIndex.value = countries.findIndex(c => c.code === matchingCountries[0].code);
-        countryOption.value[highlightedIndex.value]?.focus();
-      }
-
-      lastKeyPressedTime.value = currentTime;
-    }
-
     switch (event.key) {
       case 'ArrowDown':
         highlightedIndex.value = (highlightedIndex.value + 1) % countries.length;
-        countryOption.value[highlightedIndex.value]?.focus();
+        nextTick(() => countryOption.value[highlightedIndex.value]?.focus());
         break;
       case 'ArrowUp':
         highlightedIndex.value = (highlightedIndex.value - 1 + countries.length) % countries.length;
-        countryOption.value[highlightedIndex.value]?.focus();
+        nextTick(() => countryOption.value[highlightedIndex.value]?.focus());
         break;
       case 'Enter':
       case ' ':
@@ -296,11 +286,13 @@ function handleKeydown(event: KeyboardEvent): void {
         break;
       case 'Escape':
         closeDropdown();
-        dropdownButton.value?.focus();
+        comboboxRef.value?.focus();
         break;
       case 'Tab':
         closeDropdown();
         telInput.value?.focus();
+        break;
+      default:
         break;
     }
   } else if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
@@ -310,7 +302,7 @@ function handleKeydown(event: KeyboardEvent): void {
 
 const handleClickOutside = (event: MouseEvent) => {
   const target = event.target as HTMLElement;
-  if (dropdownButton.value && !dropdownButton.value.contains(target)) {
+  if (!target.closest('.fr-select')) {
     closeDropdown();
   }
 };
@@ -320,7 +312,7 @@ function closeDropdown(): void {
 }
 
 function checkPhoneNumberPresence(): boolean {
-  if (!phoneNumber.value) {
+  if (props.required && !phoneNumber.value) {
     setErrorMessage(props.errorMessages.required);
     return false;
   }
@@ -328,7 +320,10 @@ function checkPhoneNumberPresence(): boolean {
 }
 
 function validatePhoneNumberFormat(): boolean {
-  const isLengthValid = validatePhoneNumberLength(phoneNumber.value, selectedCountry.value)
+  if (!phoneNumber.value) {
+    return true;
+  }
+  const isLengthValid = validatePhoneNumberLength(phoneNumber.value, selectedCountry.value);
   if (isLengthValid !== undefined) {
     setErrorMessage(props.reasonMessages[isLengthValid]);
     return false;
@@ -345,12 +340,11 @@ function validatePhoneNumberFormat(): boolean {
 function checkPhoneNumberType(): boolean {
   const parsedNumber = getParsedPhoneNumber();
   if (!parsedNumber) return false;
-
   const numberType = parsedNumber.getType();
   const isCorrectType = numberType !== undefined && props.expectedTypes.includes(numberType);
   if (!isCorrectType) {
     const expectedTypesLabels = props.expectedTypes
-      .map((type) => numberTypeLabels[type] || type)
+      .map(type => numberTypeLabels[type] || type)
       .join(' ou ')
       .toLowerCase();
     setErrorMessage(props.errorMessages.incorrectType.replace('{types}', expectedTypesLabels));
@@ -364,6 +358,7 @@ function setErrorMessage(message: string): void {
 }
 
 function getParsedPhoneNumber(): PhoneNumber | null {
+  if (!phoneNumber.value) return null;
   try {
     return parsePhoneNumber(phoneNumber.value, selectedCountry.value);
   } catch (error) {
@@ -373,6 +368,10 @@ function getParsedPhoneNumber(): PhoneNumber | null {
 }
 
 function validatePhoneNumber(): boolean {
+  if (!phoneNumber.value && !props.required) {
+    errorMessage.value = '';
+    return true;
+  }
   if (!checkPhoneNumberPresence() || !validatePhoneNumberFormat() || !checkPhoneNumberType()) return false;
   errorMessage.value = '';
   return true;
@@ -381,7 +380,6 @@ function validatePhoneNumber(): boolean {
 function getPhoneNumberFormatted(format: 'E164' | 'NATIONAL' | 'INTERNATIONAL' | 'RFC3966'): string {
   const parsedNumber = getParsedPhoneNumber();
   if (!parsedNumber) return '';
-
   switch (format) {
     case 'E164':
       return parsedNumber.format('E.164');
@@ -390,10 +388,14 @@ function getPhoneNumberFormatted(format: 'E164' | 'NATIONAL' | 'INTERNATIONAL' |
     case 'INTERNATIONAL':
       return parsedNumber.formatInternational();
     case 'RFC3966':
-      return parsedNumber.format("RFC3966")
+      return parsedNumber.format("RFC3966");
     default:
       return parsedNumber.number;
   }
+}
+
+function getPhoneNumber(): string {
+  return phoneNumber.value;
 }
 
 function getDefaultCountryFromTimezone(): CountryCode {
@@ -415,13 +417,17 @@ defineExpose({
   validatePhoneNumber,
   phoneNumber,
   selectedCountry,
-  getPhoneNumberFormatted
+  getPhoneNumberFormatted,
 });
 </script>
 
 <style scoped>
-.selected,
-.highlighted {
+.fr-select {
+  cursor: pointer;
+}
+
+li[aria-selected="true"],
+.fr-menu__list--tel li:hover {
   background-color: var(--background-open-blue-france);
 }
 
@@ -439,11 +445,12 @@ defineExpose({
 }
 
 .fr-menu--tel .fr-nav__link {
-  box-shadow: 0 calc(-1rem - 1px) 0 -1rem var(--border-default-grey)
+  box-shadow: 0 calc(-1rem - 1px) 0 -1rem var(--border-default-grey);
 }
 
 .fr-menu__list--tel {
   background-color: var(--background-overlap-grey);
   box-shadow: 0 0 0 1px rgba(0, 0, 18, .16);
+  scrollbar-width: thin;
 }
 </style>

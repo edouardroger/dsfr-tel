@@ -13,21 +13,19 @@ describe('DsfrTel.vue', () => {
   it('ouvre et ferme le menu déroulant de sélection de pays', async () => {
     const wrapper = mount(DsfrTel);
 
-    // Vérifie que le bouton est présent avant d'interagir
-    const button = wrapper.find('button.fr-select');
-    expect(button.exists()).toBe(true);  // Vérifie que le bouton existe
+    // Utilise la div avec la classe fr-select
+    const combobox = wrapper.find('.fr-select');
+    expect(combobox.exists()).toBe(true);
 
     // Ouvre le menu
-    await button.trigger('click');
-
-    // Attends que l'élément devienne visible
+    await combobox.trigger('click');
     await wrapper.vm.$nextTick();
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
     expect(wrapper.find('[role="listbox"]').isVisible()).toBe(true);
 
     // Ferme le menu
-    await button.trigger('click');
+    await combobox.trigger('click');
     await wrapper.vm.$nextTick();
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -36,20 +34,18 @@ describe('DsfrTel.vue', () => {
 
   it('sélectionne un pays dans la liste', async () => {
     const wrapper = mount(DsfrTel);
-    const button = wrapper.find('button.fr-select');
+    const combobox = wrapper.find('.fr-select');
 
-
-    await button.trigger('click');
+    await combobox.trigger('click');
+    await wrapper.vm.$nextTick();
     const options = wrapper.findAll('li.fr-nav__link');
-    const franceOption = options.find((option) =>
-      option.text().includes('France')
-    );
+    const franceOption = options.find((option) => option.text().includes('France'));
 
     expect(franceOption).toBeDefined();
     await franceOption?.trigger('click');
 
-
-    expect(button.attributes('title')).toBe('Modifier le pays sélectionné : France');
+    // Vérifie que le titre de la combobox a bien été mis à jour
+    expect(combobox.attributes('title')).toBe('Modifier le pays sélectionné : France');
   });
 
   it('affiche une erreur si le numéro est trop court', async () => {
@@ -65,7 +61,8 @@ describe('DsfrTel.vue', () => {
   });
 
   it('affiche une erreur si le champ est vide', async () => {
-    const wrapper = mount(DsfrTel);
+    // Pour tester l'erreur sur champ vide, le champ doit être requis
+    const wrapper = mount(DsfrTel, { props: { required: true } });
     const input = wrapper.get('input[type="tel"]');
 
     await input.setValue('');
@@ -103,9 +100,11 @@ describe('DsfrTel.vue', () => {
 
   it('bascule entre les pays avec les touches du clavier', async () => {
     const wrapper = mount(DsfrTel);
-    const button = wrapper.find('button.fr-select');
+    const combobox = wrapper.find('.fr-select');
 
-    await button.trigger('click');
+    await combobox.trigger('click');
+    await wrapper.vm.$nextTick();
+    // Simule appui sur ArrowDown sur la liste déroulante
     await wrapper.get('[role="listbox"]').trigger('keydown', { key: 'ArrowDown' });
 
     const highlightedOption = wrapper.find('[aria-selected="true"]');
@@ -114,9 +113,11 @@ describe('DsfrTel.vue', () => {
 
   it('ferme le menu déroulant avec la touche Échap', async () => {
     const wrapper = mount(DsfrTel);
-    const button = wrapper.find('button.fr-select');
+    const combobox = wrapper.find('.fr-select');
 
-    await button.trigger('click');
+    await combobox.trigger('click');
+    await wrapper.vm.$nextTick();
+    // Simule appui sur Escape sur la liste déroulante
     await wrapper.get('[role="listbox"]').trigger('keydown', { key: 'Escape' });
 
     expect(wrapper.find('[role="listbox"]').exists()).toBe(false);
