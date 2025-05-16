@@ -128,6 +128,11 @@ const countryOption = ref<HTMLElement[]>([]);
 const telInput = ref<HTMLInputElement | null>(null);
 const comboboxRef = ref<HTMLElement | null>(null);
 
+const searchQuery = ref('');
+let typeAheadTimer: number | null = null;
+
+const lastKeyPressedTime = ref(0);
+
 const numberTypeLabels: Record<string, string> = {
   'MOBILE': 'Portable',
   'FIXED_LINE': 'Fixe',
@@ -212,7 +217,9 @@ function toggleDropdown(): void {
   if (isDropdownOpen.value) {
     highlightedIndex.value = countries.findIndex(c => c.code === selectedCountry.value);
     nextTick(() => {
-      countryOption.value[highlightedIndex.value]?.focus();
+      if (countryOption.value[highlightedIndex.value]) {
+        countryOption.value[highlightedIndex.value].focus();
+      }
     });
   } else {
     closeDropdown();
@@ -221,15 +228,51 @@ function toggleDropdown(): void {
 }
 
 function onComboboxKeydown(event: KeyboardEvent): void {
+  // Gestion du type-ahead (recherche incrémentale)
+  if (event.key.length === 1 && /^[a-z]$/.test(event.key)) {
+    // Si la liste est fermée, on l'ouvre et initialise l'index => par exemple sur le pays sélectionné
+    if (!isDropdownOpen.value) {
+      isDropdownOpen.value = true;
+      highlightedIndex.value = countries.findIndex(c => c.code === selectedCountry.value);
+    }
+    
+    const key = event.key.toLowerCase();
+    const now = Date.now();
+    if (now - lastKeyPressedTime.value > 500) {
+      searchQuery.value = "";
+    }
+    searchQuery.value += key;
+  
+    const idx = countries.findIndex(country =>
+      country.name.toLowerCase().startsWith(searchQuery.value)
+    );
+    if (idx !== -1) {
+      highlightedIndex.value = idx;
+      nextTick(() => {
+        if (countryOption.value[highlightedIndex.value]) {
+          countryOption.value[highlightedIndex.value].focus();
+        }
+      });
+    }
+    lastKeyPressedTime.value = now;
+    event.preventDefault();
+    return;
+  }
+  
+  // Gestion classique des touches
   switch (event.key) {
     case 'ArrowDown':
       if (!isDropdownOpen.value) {
         toggleDropdown();
         highlightedIndex.value = 0;
-        nextTick(() => countryOption.value[highlightedIndex.value]?.focus());
+        nextTick(() => {
+          countryOption.value[highlightedIndex.value]?.focus();
+        });
       } else {
         highlightedIndex.value = (highlightedIndex.value + 1) % countries.length;
-        nextTick(() => countryOption.value[highlightedIndex.value]?.focus());
+        nextTick(() => {
+          countryOption.value[highlightedIndex.value]?.focus();
+        });
       }
       event.preventDefault();
       break;
@@ -237,10 +280,14 @@ function onComboboxKeydown(event: KeyboardEvent): void {
       if (!isDropdownOpen.value) {
         toggleDropdown();
         highlightedIndex.value = countries.length - 1;
-        nextTick(() => countryOption.value[highlightedIndex.value]?.focus());
+        nextTick(() => {
+          countryOption.value[highlightedIndex.value]?.focus();
+        });
       } else {
         highlightedIndex.value = (highlightedIndex.value - 1 + countries.length) % countries.length;
-        nextTick(() => countryOption.value[highlightedIndex.value]?.focus());
+        nextTick(() => {
+          countryOption.value[highlightedIndex.value]?.focus();
+        });
       }
       event.preventDefault();
       break;
@@ -269,14 +316,53 @@ function handleKeydown(event: KeyboardEvent): void {
   if (isDropdownOpen.value) {
     event.preventDefault();
     event.stopPropagation();
+
+    // Gestion du type-ahead seulement quand la liste est affichée
+    if (event.key.length === 1 && /^[a-z]$/i.test(event.key)) {
+      const key = event.key.toLowerCase();
+      
+      // Annule le timer précédent s'il existe
+      if (typeAheadTimer) {
+        clearTimeout(typeAheadTimer);
+      }
+      
+      // Accumule la lettre dans searchQuery
+      searchQuery.value += key;
+      
+      // Planifie la réinitialisation de searchQuery après 1000ms
+      typeAheadTimer = window.setTimeout(() => {
+        searchQuery.value = "";
+        typeAheadTimer = null;
+      }, 1000);
+      
+      const idx = countries.findIndex(country =>
+        country.name.toLowerCase().startsWith(searchQuery.value)
+      );
+      if (idx !== -1) {
+        highlightedIndex.value = idx;
+        nextTick(() => {
+          if (countryOption.value[highlightedIndex.value]) {
+            countryOption.value[highlightedIndex.value].focus();
+          }
+        });
+      }
+      return;
+    }
+    
+    // Gestion classique des autres touches
     switch (event.key) {
       case 'ArrowDown':
         highlightedIndex.value = (highlightedIndex.value + 1) % countries.length;
-        nextTick(() => countryOption.value[highlightedIndex.value]?.focus());
+        nextTick(() => {
+          countryOption.value[highlightedIndex.value]?.focus();
+        });
         break;
       case 'ArrowUp':
-        highlightedIndex.value = (highlightedIndex.value - 1 + countries.length) % countries.length;
-        nextTick(() => countryOption.value[highlightedIndex.value]?.focus());
+        highlightedIndex.value =
+          (highlightedIndex.value - 1 + countries.length) % countries.length;
+        nextTick(() => {
+          countryOption.value[highlightedIndex.value]?.focus();
+        });
         break;
       case 'Enter':
       case ' ':
