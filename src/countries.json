@@ -12,6 +12,12 @@
     "flag": "🇿🇦"
   },
   {
+    "code": "ZA",
+    "name": "Afrique du Sud",
+    "dialCode": "27",
+    "flag": "🇿🇦"
+  },
+  {
     "code": "AL",
     "name": "Albanie",
     "dialCode": "355",
@@ -114,12 +120,6 @@
     "flag": "🇧🇧"
   },
   {
-    "code": "BY",
-    "name": "Biélorussie",
-    "dialCode": "375",
-    "flag": "🇧🇾"
-  },
-  {
     "code": "BE",
     "name": "Belgique",
     "dialCode": "32",
@@ -148,6 +148,12 @@
     "name": "Bhoutan",
     "dialCode": "975",
     "flag": "🇧🇹"
+  },
+  {
+    "code": "BY",
+    "name": "Biélorussie",
+    "dialCode": "375",
+    "flag": "🇧🇾"
   },
   {
     "code": "BO",
@@ -222,18 +228,6 @@
     "flag": "🇨🇻"
   },
   {
-    "code": "CF",
-    "name": "République centrafricaine",
-    "dialCode": "236",
-    "flag": "🇨🇫"
-  },
-  {
-    "code": "TD",
-    "name": "Tchad",
-    "dialCode": "235",
-    "flag": "🇹🇩"
-  },
-  {
     "code": "CL",
     "name": "Chili",
     "dialCode": "56",
@@ -244,6 +238,12 @@
     "name": "Chine",
     "dialCode": "86",
     "flag": "🇨🇳"
+  },
+  {
+    "code": "CY",
+    "name": "Chypre",
+    "dialCode": "357",
+    "flag": "🇨🇾"
   },
   {
     "code": "CO",
@@ -264,12 +264,6 @@
     "flag": "🇨🇬"
   },
   {
-    "code": "CD",
-    "name": "République démocratique du Congo",
-    "dialCode": "243",
-    "flag": "🇨🇩"
-  },
-  {
     "code": "CR",
     "name": "Costa Rica",
     "dialCode": "506",
@@ -286,18 +280,6 @@
     "name": "Cuba",
     "dialCode": "53",
     "flag": "🇨🇺"
-  },
-  {
-    "code": "CY",
-    "name": "Chypre",
-    "dialCode": "357",
-    "flag": "🇨🇾"
-  },
-  {
-    "code": "CZ",
-    "name": "République tchèque",
-    "dialCode": "420",
-    "flag": "🇨🇿"
   },
   {
     "code": "DK",
@@ -324,10 +306,10 @@
     "flag": "🇪🇬"
   },
   {
-    "code": "SV",
-    "name": "Salvador",
-    "dialCode": "503",
-    "flag": "🇸🇻"
+    "code": "AE",
+    "name": "Émirats arabes unis",
+    "dialCode": "971",
+    "flag": "🇦🇪"
   },
   {
     "code": "AE",
@@ -354,10 +336,22 @@
     "flag": "🇪🇸"
   },
   {
+    "code": "ES",
+    "name": "Espagne",
+    "dialCode": "34",
+    "flag": "🇪🇸"
+  },
+  {
     "code": "EE",
     "name": "Estonie",
     "dialCode": "372",
     "flag": "🇪🇪"
+  },
+  {
+    "code": "SZ",
+    "name": "Eswatini",
+    "dialCode": "268",
+    "flag": "🇸🇿"
   },
   {
     "code": "US",
@@ -406,6 +400,12 @@
     "name": "Géorgie",
     "dialCode": "995",
     "flag": "🇬🇪"
+  },
+  {
+    "code": "GS",
+    "name": "Géorgie du Sud-et-les-Îles Sandwich du Sud",
+    "dialCode": "500",
+    "flag": "🇬🇸"
   },
   {
     "code": "GH",
@@ -474,6 +474,36 @@
     "flag": "🇭🇺"
   },
   {
+    "code": "NF",
+    "name": "Île Norfolk",
+    "dialCode": "672",
+    "flag": "🇳🇫"
+  },
+  {
+    "code": "MP",
+    "name": "Îles Mariannes du Nord",
+    "dialCode": "1-670",
+    "flag": "🇲🇵"
+  },
+  {
+    "code": "MH",
+    "name": "Îles Marshall",
+    "dialCode": "692",
+    "flag": "🇲🇭"
+  },
+  {
+    "code": "SB",
+    "name": "Îles Salomon",
+    "dialCode": "677",
+    "flag": "🇸🇧"
+  },
+  {
+    "code": "TC",
+    "name": "Îles Turques-et-Caïques",
+    "dialCode": "1-649",
+    "flag": "🇹🇨"
+  },
+  {
     "code": "IN",
     "name": "Inde",
     "dialCode": "91",
@@ -486,16 +516,16 @@
     "flag": "🇮🇩"
   },
   {
-    "code": "IR",
-    "name": "Iran",
-    "dialCode": "98",
-    "flag": "🇮🇷"
-  },
-  {
     "code": "IQ",
     "name": "Irak",
     "dialCode": "964",
     "flag": "🇮🇶"
+  },
+  {
+    "code": "IR",
+    "name": "Iran",
+    "dialCode": "98",
+    "flag": "🇮🇷"
   },
   {
     "code": "IE",
@@ -630,16 +660,16 @@
     "flag": "🇲🇬"
   },
   {
-    "code": "MW",
-    "name": "Malawi",
-    "dialCode": "265",
-    "flag": "🇲🇼"
-  },
-  {
     "code": "MY",
     "name": "Malaisie",
     "dialCode": "60",
     "flag": "🇲🇾"
+  },
+  {
+    "code": "MW",
+    "name": "Malawi",
+    "dialCode": "265",
+    "flag": "🇲🇼"
   },
   {
     "code": "MV",
@@ -660,10 +690,10 @@
     "flag": "🇲🇹"
   },
   {
-    "code": "MH",
-    "name": "Îles Marshall",
-    "dialCode": "692",
-    "flag": "🇲🇭"
+    "code": "MA",
+    "name": "Maroc",
+    "dialCode": "212",
+    "flag": "🇲🇦"
   },
   {
     "code": "MQ",
@@ -672,16 +702,16 @@
     "flag": "🇲🇶"
   },
   {
-    "code": "MR",
-    "name": "Mauritanie",
-    "dialCode": "222",
-    "flag": "🇲🇷"
-  },
-  {
     "code": "MU",
     "name": "Maurice",
     "dialCode": "230",
     "flag": "🇲🇺"
+  },
+  {
+    "code": "MR",
+    "name": "Mauritanie",
+    "dialCode": "222",
+    "flag": "🇲🇷"
   },
   {
     "code": "YT",
@@ -732,12 +762,6 @@
     "flag": "🇲🇸"
   },
   {
-    "code": "MA",
-    "name": "Maroc",
-    "dialCode": "212",
-    "flag": "🇲🇦"
-  },
-  {
     "code": "MZ",
     "name": "Mozambique",
     "dialCode": "258",
@@ -760,18 +784,6 @@
     "name": "Népal",
     "dialCode": "977",
     "flag": "🇳🇵"
-  },
-  {
-    "code": "NL",
-    "name": "Pays-Bas",
-    "dialCode": "31",
-    "flag": "🇳🇱"
-  },
-  {
-    "code": "NZ",
-    "name": "Nouvelle-Zélande",
-    "dialCode": "64",
-    "flag": "🇳🇿"
   },
   {
     "code": "NI",
@@ -798,28 +810,34 @@
     "flag": "🇳🇺"
   },
   {
-    "code": "NF",
-    "name": "Île Norfolk",
-    "dialCode": "672",
-    "flag": "🇳🇫"
-  },
-  {
-    "code": "MP",
-    "name": "Îles Mariannes du Nord",
-    "dialCode": "1-670",
-    "flag": "🇲🇵"
-  },
-  {
     "code": "NO",
     "name": "Norvège",
     "dialCode": "47",
     "flag": "🇳🇴"
   },
   {
+    "code": "NZ",
+    "name": "Nouvelle-Zélande",
+    "dialCode": "64",
+    "flag": "🇳🇿"
+  },
+  {
     "code": "OM",
     "name": "Oman",
     "dialCode": "968",
     "flag": "🇴🇲"
+  },
+  {
+    "code": "UG",
+    "name": "Ouganda",
+    "dialCode": "256",
+    "flag": "🇺🇬"
+  },
+  {
+    "code": "UZ",
+    "name": "Ouzbékistan",
+    "dialCode": "998",
+    "flag": "🇺🇿"
   },
   {
     "code": "PK",
@@ -858,6 +876,12 @@
     "flag": "🇵🇾"
   },
   {
+    "code": "NL",
+    "name": "Pays-Bas",
+    "dialCode": "31",
+    "flag": "🇳🇱"
+  },
+  {
     "code": "PE",
     "name": "Pérou",
     "dialCode": "51",
@@ -876,22 +900,40 @@
     "flag": "🇵🇱"
   },
   {
-    "code": "PT",
-    "name": "Portugal",
-    "dialCode": "351",
-    "flag": "🇵🇹"
-  },
-  {
     "code": "PR",
     "name": "Porto Rico",
     "dialCode": "1-787",
     "flag": "🇵🇷"
   },
   {
+    "code": "PT",
+    "name": "Portugal",
+    "dialCode": "351",
+    "flag": "🇵🇹"
+  },
+  {
     "code": "QA",
     "name": "Qatar",
     "dialCode": "974",
     "flag": "🇶🇦"
+  },
+  {
+    "code": "CF",
+    "name": "République centrafricaine",
+    "dialCode": "236",
+    "flag": "🇨🇫"
+  },
+  {
+    "code": "CD",
+    "name": "République démocratique du Congo",
+    "dialCode": "243",
+    "flag": "🇨🇩"
+  },
+  {
+    "code": "CZ",
+    "name": "République tchèque",
+    "dialCode": "420",
+    "flag": "🇨🇿"
   },
   {
     "code": "RE",
@@ -904,6 +946,12 @@
     "name": "Roumanie",
     "dialCode": "40",
     "flag": "🇷🇴"
+  },
+  {
+    "code": "GB",
+    "name": "Royaume-Uni",
+    "dialCode": "44",
+    "flag": "🇬🇧"
   },
   {
     "code": "RU",
@@ -936,12 +984,6 @@
     "flag": "🇰🇳"
   },
   {
-    "code": "LC",
-    "name": "Sainte-Lucie",
-    "dialCode": "1-758",
-    "flag": "🇱🇨"
-  },
-  {
     "code": "MF",
     "name": "Saint-Martin",
     "dialCode": "590",
@@ -958,6 +1000,18 @@
     "name": "Saint-Vincent-et-les-Grenadines",
     "dialCode": "1-784",
     "flag": "🇻🇨"
+  },
+  {
+    "code": "LC",
+    "name": "Sainte-Lucie",
+    "dialCode": "1-758",
+    "flag": "🇱🇨"
+  },
+  {
+    "code": "SV",
+    "name": "Salvador",
+    "dialCode": "503",
+    "flag": "🇸🇻"
   },
   {
     "code": "ST",
@@ -1014,40 +1068,10 @@
     "flag": "🇸🇮"
   },
   {
-    "code": "SB",
-    "name": "Îles Salomon",
-    "dialCode": "677",
-    "flag": "🇸🇧"
-  },
-  {
     "code": "SO",
     "name": "Somalie",
     "dialCode": "252",
     "flag": "🇸🇴"
-  },
-  {
-    "code": "ZA",
-    "name": "Afrique du Sud",
-    "dialCode": "27",
-    "flag": "🇿🇦"
-  },
-  {
-    "code": "GS",
-    "name": "Géorgie du Sud-et-les-Îles Sandwich du Sud",
-    "dialCode": "500",
-    "flag": "🇬🇸"
-  },
-  {
-    "code": "ES",
-    "name": "Espagne",
-    "dialCode": "34",
-    "flag": "🇪🇸"
-  },
-  {
-    "code": "LK",
-    "name": "Sri Lanka",
-    "dialCode": "94",
-    "flag": "🇱🇰"
   },
   {
     "code": "SD",
@@ -1056,16 +1080,10 @@
     "flag": "🇸🇩"
   },
   {
-    "code": "SR",
-    "name": "Suriname",
-    "dialCode": "597",
-    "flag": "🇸🇷"
-  },
-  {
-    "code": "SZ",
-    "name": "Eswatini",
-    "dialCode": "268",
-    "flag": "🇸🇿"
+    "code": "LK",
+    "name": "Sri Lanka",
+    "dialCode": "94",
+    "flag": "🇱🇰"
   },
   {
     "code": "SE",
@@ -1078,6 +1096,12 @@
     "name": "Suisse",
     "dialCode": "41",
     "flag": "🇨🇭"
+  },
+  {
+    "code": "SR",
+    "name": "Suriname",
+    "dialCode": "597",
+    "flag": "🇸🇷"
   },
   {
     "code": "SY",
@@ -1096,6 +1120,12 @@
     "name": "Tanzanie",
     "dialCode": "255",
     "flag": "🇹🇿"
+  },
+  {
+    "code": "TD",
+    "name": "Tchad",
+    "dialCode": "235",
+    "flag": "🇹🇩"
   },
   {
     "code": "TH",
@@ -1134,22 +1164,16 @@
     "flag": "🇹🇳"
   },
   {
-    "code": "TR",
-    "name": "Turquie",
-    "dialCode": "90",
-    "flag": "🇹🇷"
-  },
-  {
     "code": "TM",
     "name": "Turkménistan",
     "dialCode": "993",
     "flag": "🇹🇲"
   },
   {
-    "code": "TC",
-    "name": "Îles Turques-et-Caïques",
-    "dialCode": "1-649",
-    "flag": "🇹🇨"
+    "code": "TR",
+    "name": "Turquie",
+    "dialCode": "90",
+    "flag": "🇹🇷"
   },
   {
     "code": "TV",
@@ -1158,40 +1182,16 @@
     "flag": "🇹🇻"
   },
   {
-    "code": "UG",
-    "name": "Ouganda",
-    "dialCode": "256",
-    "flag": "🇺🇬"
-  },
-  {
     "code": "UA",
     "name": "Ukraine",
     "dialCode": "380",
     "flag": "🇺🇦"
   },
   {
-    "code": "AE",
-    "name": "Émirats arabes unis",
-    "dialCode": "971",
-    "flag": "🇦🇪"
-  },
-  {
-    "code": "GB",
-    "name": "Royaume-Uni",
-    "dialCode": "44",
-    "flag": "🇬🇧"
-  },
-  {
     "code": "UY",
     "name": "Uruguay",
     "dialCode": "598",
     "flag": "🇺🇾"
-  },
-  {
-    "code": "UZ",
-    "name": "Ouzbékistan",
-    "dialCode": "998",
-    "flag": "🇺🇿"
   },
   {
     "code": "VU",
