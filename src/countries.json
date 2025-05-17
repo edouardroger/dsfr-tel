@@ -12,12 +12,6 @@
     "flag": "🇿🇦"
   },
   {
-    "code": "ZA",
-    "name": "Afrique du Sud",
-    "dialCode": "27",
-    "flag": "🇿🇦"
-  },
-  {
     "code": "AL",
     "name": "Albanie",
     "dialCode": "355",
@@ -34,6 +28,12 @@
     "name": "Allemagne",
     "dialCode": "49",
     "flag": "🇩🇪"
+  },
+  {
+    "code": "AS",
+    "name": "American Samoa",
+    "dialCode": "1-684",
+    "flag": "🇦🇸"
   },
   {
     "code": "AD",
@@ -264,6 +264,18 @@
     "flag": "🇨🇬"
   },
   {
+    "code": "KP",
+    "name": "Corée du Nord",
+    "dialCode": "850",
+    "flag": "🇰🇵"
+  },
+  {
+    "code": "KR",
+    "name": "Corée du Sud",
+    "dialCode": "82",
+    "flag": "🇰🇷"
+  },
+  {
     "code": "CR",
     "name": "Costa Rica",
     "dialCode": "506",
@@ -312,12 +324,6 @@
     "flag": "🇦🇪"
   },
   {
-    "code": "AE",
-    "name": "Émirats arabes unis",
-    "dialCode": "971",
-    "flag": "🇦🇪"
-  },
-  {
     "code": "EC",
     "name": "Équateur",
     "dialCode": "593",
@@ -328,12 +334,6 @@
     "name": "Érythrée",
     "dialCode": "291",
     "flag": "🇪🇷"
-  },
-  {
-    "code": "ES",
-    "name": "Espagne",
-    "dialCode": "34",
-    "flag": "🇪🇸"
   },
   {
     "code": "ES",
@@ -426,6 +426,12 @@
     "flag": "🇬🇩"
   },
   {
+    "code": "GP",
+    "name": "Guadeloupe",
+    "dialCode": "590",
+    "flag": "🇬🇵"
+  },
+  {
     "code": "GT",
     "name": "Guatemala",
     "dialCode": "502",
@@ -454,6 +460,12 @@
     "name": "Guyana",
     "dialCode": "592",
     "flag": "🇬🇾"
+  },
+  {
+    "code": "GF",
+    "name": "Guyane française",
+    "dialCode": "594",
+    "flag": "🇬🇫"
   },
   {
     "code": "HT",
@@ -816,6 +828,12 @@
     "flag": "🇳🇴"
   },
   {
+    "code": "NC",
+    "name": "Nouvelle-Calédonie",
+    "dialCode": "687",
+    "flag": "🇳🇨"
+  },
+  {
     "code": "NZ",
     "name": "Nouvelle-Zélande",
     "dialCode": "64",
@@ -912,6 +930,12 @@
     "flag": "🇵🇹"
   },
   {
+    "code": "PF",
+    "name": "Polynésie française",
+    "dialCode": "689",
+    "flag": "🇵🇫"
+  },
+  {
     "code": "QA",
     "name": "Qatar",
     "dialCode": "974",
@@ -1006,6 +1030,12 @@
     "name": "Sainte-Lucie",
     "dialCode": "1-758",
     "flag": "🇱🇨"
+  },
+  {
+    "code": "VA",
+    "name": "Cité du Vatican",
+    "dialCode": "379",
+    "flag": "🇻🇦"
   },
   {
     "code": "SV",
