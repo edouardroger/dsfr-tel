@@ -9,14 +9,14 @@
       <div class="fr-select" ref="comboboxRef" role="combobox" tabindex="0" aria-haspopup="listbox"
         :aria-controls="'fr-country-listbox-' + uid" :aria-expanded="isDropdownOpen"
         :aria-activedescendant="activeDescendant" @click="toggleDropdown" @keydown="onComboboxKeydown"
-        :title="'Modifier le pays sélectionné : ' + getSelectedCountry.name">
+        :title="'Modifier l\'indicatif sélectionné : ' + getSelectedCountry.name">
         <span aria-hidden="true" class="flag-indicatif">{{ getSelectedCountry.flag }}</span>
-        <span class="fr-sr-only">Modifier le pays sélectionné {{ getSelectedCountry.name }}</span>
+        <span class="fr-sr-only">Modifier l'indicatif sélectionné {{ getSelectedCountry.name }}</span>
       </div>
     </div>
     <div class="fr-menu fr-menu--tel" v-if="isDropdownOpen">
       <ul :id="'fr-country-listbox-' + uid" role="listbox" tabindex="-1" @keydown="handleKeydown" ref="dropdownMenu"
-        aria-label="Liste de sélection du pays" style="max-height:200px;overflow-y:auto;"
+        aria-label="Liste de sélection de l'indicatif" style="max-height:200px;overflow-y:auto;"
         class="fr-menu__list fr-menu__list--tel">
         <li v-for="(country, index) in countries" :key="country.code" role="option" @click="selectCountry(country)"
           :aria-selected="country.code === selectedCountry ? 'true' : 'false'" :class="{ 'fr-nav__link': true }"
@@ -93,9 +93,17 @@ const props = defineProps({
       parse: "Erreur lors de l'analyse du numéro."
     })
   },
+  placeholder: {
+    type: String,
+    default: undefined
+  },
   placeholderPrefix: {
     type: String,
     default: 'Ex. : '
+  },
+  useDynamicPlaceholder: {
+    type: Boolean,
+    default: false
   },
   reasonMessages: {
     type: Object as PropType<Record<string, string>>,
@@ -166,8 +174,14 @@ const getSelectedCountry = computed(() => {
 });
 
 const placeholder = computed(() => {
-  const example = getExampleNumber(selectedCountry.value, examples);
-  return example ? `${props.placeholderPrefix}${example.formatNational()}` : '';
+  if (props.placeholder !== undefined) {
+    return props.placeholder;
+  }
+  if (props.useDynamicPlaceholder) {
+    const example = getExampleNumber(selectedCountry.value, examples);
+    return example ? `${props.placeholderPrefix}${example.formatNational()}` : undefined;
+  }
+  return undefined;
 });
 
 const computedHint = computed(() => {
@@ -239,14 +253,14 @@ function onComboboxKeydown(event: KeyboardEvent): void {
       isDropdownOpen.value = true;
       highlightedIndex.value = countries.findIndex(c => c.code === selectedCountry.value);
     }
-    
+
     const key = event.key.toLowerCase();
     const now = Date.now();
     if (now - lastKeyPressedTime.value > 500) {
       searchQuery.value = "";
     }
     searchQuery.value += key;
-  
+
     const idx = countries.findIndex(country =>
       country.name.toLowerCase().startsWith(searchQuery.value)
     );
@@ -262,7 +276,7 @@ function onComboboxKeydown(event: KeyboardEvent): void {
     event.preventDefault();
     return;
   }
-  
+
   // Gestion classique des touches
   switch (event.key) {
     case 'ArrowDown':
@@ -324,21 +338,21 @@ function handleKeydown(event: KeyboardEvent): void {
     // Gestion du type-ahead seulement quand la liste est affichée
     if (event.key.length === 1 && /^[a-z]$/i.test(event.key)) {
       const key = event.key.toLowerCase();
-      
+
       // Annule le timer précédent s'il existe
       if (typeAheadTimer) {
         clearTimeout(typeAheadTimer);
       }
-      
+
       // Accumule la lettre dans searchQuery
       searchQuery.value += key;
-      
+
       // Planifie la réinitialisation de searchQuery après 1000ms
       typeAheadTimer = window.setTimeout(() => {
         searchQuery.value = "";
         typeAheadTimer = null;
       }, 1000);
-      
+
       const idx = countries.findIndex(country =>
         country.name.toLowerCase().startsWith(searchQuery.value)
       );
@@ -352,7 +366,7 @@ function handleKeydown(event: KeyboardEvent): void {
       }
       return;
     }
-    
+
     // Gestion classique des autres touches
     switch (event.key) {
       case 'ArrowDown':
