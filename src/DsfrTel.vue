@@ -114,6 +114,10 @@ const props = defineProps({
   required: {
     type: Boolean,
     default: false
+  },
+  autoDetectCountry: {
+    type: Boolean,
+    default: true
   }
 });
 
@@ -480,18 +484,18 @@ function getPhoneNumberFormatted(format: 'E164' | 'NATIONAL' | 'INTERNATIONAL' |
   }
 }
 
-function getPhoneNumber(): string {
-  return phoneNumber.value;
-}
-
 function getDefaultCountryFromTimezone(): CountryCode {
   const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  console.log("Timezone détectée :", userTimezone);
   const countryCode = timezoneToCountryTyped[userTimezone] || 'FR';
+  console.log("Pays par défaut basé sur la timezone :", countryCode);
   return countryCode as CountryCode;
 }
 
 onMounted(() => {
-  selectedCountry.value = getDefaultCountryFromTimezone();
+  if (props.autoDetectCountry) {
+    selectedCountry.value = getDefaultCountryFromTimezone();
+  }
   document.addEventListener("click", handleClickOutside);
 });
 
