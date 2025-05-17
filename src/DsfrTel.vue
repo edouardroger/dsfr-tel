@@ -486,9 +486,7 @@ function getPhoneNumberFormatted(format: 'E164' | 'NATIONAL' | 'INTERNATIONAL' |
 
 function getDefaultCountryFromTimezone(): CountryCode {
   const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  console.log("Timezone détectée :", userTimezone);
   const countryCode = timezoneToCountryTyped[userTimezone] || 'FR';
-  console.log("Pays par défaut basé sur la timezone :", countryCode);
   return countryCode as CountryCode;
 }
 
