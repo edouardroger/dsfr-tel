@@ -2,14 +2,15 @@
 
 ## Qu'est-ce ?
 
-Dsfr-tel est un composant VueJS permettant de formater et de valider la saisie d’un numéro de téléphone portable grâce à la bibliothèque Libphonenumber de Google, tout en s'inscrivant dans le système de design de l'État.
+Dsfr-tel est un composant VueJS permettant de formater et de valider la saisie d’un numéro de téléphone (portable, fixe…) grâce à la bibliothèque Libphonenumber de Google, tout en s'inscrivant dans le système de design de l'État.
 
 Il offre notamment :
 
-- un champ de saisie dédié aux numéros de téléphone,
-- une liste déroulante accessible pour sélectionner l'indicatif du pays correspondant,
-- un formatage automatique du numéro (passage de l'international au format national, par exemple),
-- une validation du numéro (présence, longueur, validité, type…).
+- un champ de saisie du numéro de téléphone,
+- une liste déroulante pour sélectionner l'indicatif du pays correspondant,
+- un formatage automatique du numéro (passage de l'international au format national, par exemple) y compris lors de la saisie,
+- une validation du numéro (présence, longueur, validité, type…),
+- la détection automatique du pays à partir du fuseau horaire (optionnelle via la prop `autoDetectCountry`).
 
 ## [Démonstration](https://edouardroger.github.io/dsfr-tel-demo/)
 
@@ -32,7 +33,7 @@ Le composant accepte les paramètres suivants via des `props` :
   *Default :* `['MOBILE', 'FIXED_LINE_OR_MOBILE']`
 
 - **fieldsetLegend** (string)  
-  Texte affiché dans la légende du fieldset.  
+  Texte affiché dans la légende du regroupement de champs.  
   *Default :* `"Votre numéro de téléphone portable"`
 
 - **errorMessages** (Object)  
@@ -50,8 +51,7 @@ Le composant accepte les paramètres suivants via des `props` :
   ```
 
 - **placeholderPrefix** (string)  
-  Préfixe utilisé pour le placeholder dans le champ de saisie.  
-
+  Préfixe utilisé pour l'emplacement de texte du champ de saisie.  
   *Default :* `"Exemple : "`
 
 - **reasonMessages** (Object)  
@@ -69,12 +69,16 @@ Le composant accepte les paramètres suivants via des `props` :
   ```
 
 - **hint** (string)  
-  Indication sur le format attendu  
-  *Default :* `"Format : X"` où **X** est un exemple de format au format national, fonction du pays sélectionné.
+  Indication sur le format attendu.  
+  *Default :* `"Format : X"` où **X** est un exemple de format (au format national, fonction du pays sélectionné).
+
+- **autoDetectCountry** (boolean)  
+  Active la détection automatique du pays de l’usager à partir de sa timezone.  
+  *Default :* `true`
 
 ## Méthodes
 
-Le composant expose plusieurs méthodes :
+Le composant expose plusieurs méthodes :
 
 - **validatePhoneNumber() : boolean**  
   Valide le numéro de téléphone saisi en vérifiant :
@@ -83,17 +87,16 @@ Le composant expose plusieurs méthodes :
   - Son type (parmi ceux définis dans `expectedTypes`).
 
 - **getPhoneNumberFormatted(format: 'E164' | 'NATIONAL' | 'INTERNATIONAL' | 'RFC3966') : string**  
+  Retourne le numéro de téléphone au format demandé (national, international…).
 
-Retourne le numéro de téléphone au selon le format demandé.
+> **Note :** La détection du pays via la timezone s'effectue automatiquement lors du montage du composant si la prop `autoDetectCountry` est activée. La méthode `getDefaultCountryFromTimezone` récupère la timezone de l’usager pour définir le pays par défaut.
 
-Ces méthodes sont exposées via `defineExpose` et peuvent être utilisées dans l’application parent.
-
-## Propriétés Exposées
+## Propriétés exposées
 
 Les propriétés accessibles sur le composant sont :
 
-- **phoneNumber** : Le numéro de téléphone actuellement saisi.
-- **selectedCountry** : Le code du pays sélectionné via la liste déroulante.
+- **phoneNumber** : le numéro de téléphone actuellement saisi.
+- **selectedCountry** : le code du pays sélectionné via la liste déroulante.
 
 ## Utilisation
 
@@ -141,5 +144,6 @@ Vous pouvez personnaliser l'apparence et le comportement du composant en lui pas
     INVALID_LENGTH: 'Longueur invalide',
     NOT_A_NUMBER: 'Ce n’est pas un numéro'
   }"
+  :autoDetectCountry="true"
 />
 ```
