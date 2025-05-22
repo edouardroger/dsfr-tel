@@ -5,13 +5,15 @@
       <span class="fr-hint-text">{{ computedHint }}</span>
     </legend>
     <div class="fr-fieldset__element fr-fieldset__element--inline fr-fieldset--dialcode">
-      <!-- Div focusable servant de combobox -->
+      <!-- Div recevant le focus et servant de combobox -->
       <div class="fr-select" ref="comboboxRef" role="combobox" tabindex="0" aria-haspopup="listbox"
         :aria-controls="'fr-country-listbox-' + uid" :aria-expanded="isDropdownOpen"
         :aria-activedescendant="activeDescendant" @click="toggleDropdown" @keydown="onComboboxKeydown"
-        :title="'Modifier l\'indicatif sélectionné : ' + getSelectedCountry.name">
+        :title="dialcodeLabel"  :aria-label="dialcodeLabel" >
         <span aria-hidden="true" class="flag-indicatif">{{ getSelectedCountry.flag }}</span>
-        <span class="fr-sr-only">Modifier l'indicatif sélectionné {{ getSelectedCountry.name }}</span>
+        <span class="fr-sr-only" :id="'fr-dialcode-label-' + uid">
+          {{ dialcodeLabel }}
+        </span>
       </div>
     </div>
     <div class="fr-menu fr-menu--tel" v-if="isDropdownOpen">
@@ -29,7 +31,7 @@
     </div>
     <div class="fr-fieldset__element fr-fieldset__element--inline fr-fieldset__element--tel">
       <input v-model="phoneNumber" @input="formatPhoneNumber" @paste="handlePaste" :placeholder="placeholder"
-        class="fr-input" type="tel" aria-label="Votre numéro de téléphone" id="tel-input"
+        class="fr-input" type="tel" aria-label="Votre numéro de téléphone" title="Votre numéro de téléphone" id="tel-input"
         aria-describedby="tel-input-message" ref="telInput" autocomplete="tel-national" />
     </div>
     <p v-if="errorMessage" class="fr-fieldset__element fr-message fr-message--error" id="tel-input-message">
@@ -192,10 +194,12 @@ const computedHint = computed(() => {
 
 const activeDescendant = computed(() => {
   if (isDropdownOpen.value && highlightedIndex.value >= 0 && countries[highlightedIndex.value]) {
-    return 'fr-country-option-' + uid + '-' + countries[highlightedIndex.value].code;
+    return `fr-country-option-${uid}-${countries[highlightedIndex.value].code}`;
   }
-  return '';
+  return undefined;
 });
+
+const dialcodeLabel = computed(() => `Modifier l'indicatif sélectionné (${getSelectedCountry.value.name})`);
 
 function formatPhoneNumber(): void {
   if (phoneNumber.value.startsWith('+')) {
