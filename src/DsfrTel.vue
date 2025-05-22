@@ -11,9 +11,6 @@
         :aria-activedescendant="activeDescendant" @click="toggleDropdown" @keydown="onComboboxKeydown"
         :title="dialcodeLabel"  :aria-label="dialcodeLabel" >
         <span aria-hidden="true" class="flag-indicatif">{{ getSelectedCountry.flag }}</span>
-        <span class="fr-sr-only" :id="'fr-dialcode-label-' + uid">
-          {{ dialcodeLabel }}
-        </span>
       </div>
     </div>
     <div class="fr-menu fr-menu--tel" v-if="isDropdownOpen">
@@ -31,7 +28,7 @@
     </div>
     <div class="fr-fieldset__element fr-fieldset__element--inline fr-fieldset__element--tel">
       <input v-model="phoneNumber" @input="formatPhoneNumber" @paste="handlePaste" :placeholder="placeholder"
-        class="fr-input" type="tel" aria-label="Votre numéro de téléphone" title="Votre numéro de téléphone" id="tel-input"
+        class="fr-input" type="tel" aria-label="Numéro de téléphone" title="Votre numéro de téléphone" id="tel-input"
         aria-describedby="tel-input-message" ref="telInput" autocomplete="tel-national" />
     </div>
     <p v-if="errorMessage" class="fr-fieldset__element fr-message fr-message--error" id="tel-input-message">
