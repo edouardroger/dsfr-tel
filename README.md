@@ -37,7 +37,7 @@ Le composant accepte les paramètres suivants via des `props` :
   *Default :* `"Votre numéro de téléphone portable"`
 
 - **errorMessages** (Object)  
-  Messages d'erreur généraux utilisés lors de la validation.  
+  Messages d'erreur généraux utilisés lors de la validation.
   *Default :*
 
   ```json
@@ -88,6 +88,9 @@ Le composant expose plusieurs méthodes :
 
 - **getPhoneNumberFormatted(format: 'E164' | 'NATIONAL' | 'INTERNATIONAL' | 'RFC3966') : string**  
   Retourne le numéro de téléphone au format demandé (national, international…).
+
+- **getPhoneNumberType() : string**  
+  Renvoie le type du numéro tel que retourné par Libphonenumber.
 
 > **Note :** La détection du pays via la timezone s'effectue automatiquement lors du montage du composant si la prop `autoDetectCountry` est activée. La méthode `getDefaultCountryFromTimezone` récupère la timezone de l’usager pour définir le pays par défaut.
 
