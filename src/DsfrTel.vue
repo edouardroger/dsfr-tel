@@ -9,7 +9,7 @@
       <div class="fr-select" ref="comboboxRef" role="combobox" tabindex="0" aria-haspopup="listbox"
         :aria-controls="'fr-country-listbox-' + uid" :aria-expanded="isDropdownOpen"
         :aria-activedescendant="activeDescendant" @click="toggleDropdown" @keydown="onComboboxKeydown"
-        :title="dialcodeLabel"  :aria-label="dialcodeLabel" >
+        :title="dialcodeLabel" :aria-label="dialcodeLabel">
         <span aria-hidden="true" class="flag-indicatif">{{ getSelectedCountry.flag }}</span>
       </div>
     </div>
@@ -246,52 +246,55 @@ function toggleDropdown(): void {
   }
 }
 
+/**
+ * Gestion de la recherche incrémentale (type-ahead).
+ */
+function handleTypeAhead(key: string, delay: number = 1000): void {
+  const lowerKey = key.toLowerCase();
+  if (typeAheadTimer) clearTimeout(typeAheadTimer);
+  searchQuery.value += lowerKey;
+  typeAheadTimer = window.setTimeout(() => {
+    searchQuery.value = "";
+    typeAheadTimer = null;
+  }, delay);
+  const idx = countries.findIndex(country =>
+    country.name.toLowerCase().startsWith(searchQuery.value)
+  );
+  if (idx !== -1) {
+    highlightedIndex.value = idx;
+    nextTick(() => {
+      if (countryOption.value[highlightedIndex.value]) {
+        countryOption.value[highlightedIndex.value].focus();
+      }
+    });
+  }
+}
+
 function onComboboxKeydown(event: KeyboardEvent): void {
-  // Gestion du type-ahead (recherche incrémentale)
   if (event.key.length === 1 && /^[a-z]$/.test(event.key)) {
-    // Si la liste est fermée, on l'ouvre et initialise l'index => par exemple sur le pays sélectionné
     if (!isDropdownOpen.value) {
       isDropdownOpen.value = true;
       highlightedIndex.value = countries.findIndex(c => c.code === selectedCountry.value);
     }
-
-    const key = event.key.toLowerCase();
     const now = Date.now();
     if (now - lastKeyPressedTime.value > 500) {
       searchQuery.value = "";
     }
-    searchQuery.value += key;
-
-    const idx = countries.findIndex(country =>
-      country.name.toLowerCase().startsWith(searchQuery.value)
-    );
-    if (idx !== -1) {
-      highlightedIndex.value = idx;
-      nextTick(() => {
-        if (countryOption.value[highlightedIndex.value]) {
-          countryOption.value[highlightedIndex.value].focus();
-        }
-      });
-    }
+    // Utilise un délai réduit (500 ms) dans ce contexte
+    handleTypeAhead(event.key, 500);
     lastKeyPressedTime.value = now;
     event.preventDefault();
     return;
   }
-
-  // Gestion classique des touches
   switch (event.key) {
     case 'ArrowDown':
       if (!isDropdownOpen.value) {
         toggleDropdown();
         highlightedIndex.value = 0;
-        nextTick(() => {
-          countryOption.value[highlightedIndex.value]?.focus();
-        });
+        nextTick(() => countryOption.value[highlightedIndex.value]?.focus());
       } else {
         highlightedIndex.value = (highlightedIndex.value + 1) % countries.length;
-        nextTick(() => {
-          countryOption.value[highlightedIndex.value]?.focus();
-        });
+        nextTick(() => countryOption.value[highlightedIndex.value]?.focus());
       }
       event.preventDefault();
       break;
@@ -299,14 +302,10 @@ function onComboboxKeydown(event: KeyboardEvent): void {
       if (!isDropdownOpen.value) {
         toggleDropdown();
         highlightedIndex.value = countries.length - 1;
-        nextTick(() => {
-          countryOption.value[highlightedIndex.value]?.focus();
-        });
+        nextTick(() => countryOption.value[highlightedIndex.value]?.focus());
       } else {
         highlightedIndex.value = (highlightedIndex.value - 1 + countries.length) % countries.length;
-        nextTick(() => {
-          countryOption.value[highlightedIndex.value]?.focus();
-        });
+        nextTick(() => countryOption.value[highlightedIndex.value]?.focus());
       }
       event.preventDefault();
       break;
@@ -335,53 +334,18 @@ function handleKeydown(event: KeyboardEvent): void {
   if (isDropdownOpen.value) {
     event.preventDefault();
     event.stopPropagation();
-
-    // Gestion du type-ahead seulement quand la liste est affichée
     if (event.key.length === 1 && /^[a-z]$/i.test(event.key)) {
-      const key = event.key.toLowerCase();
-
-      // Annule le timer précédent s'il existe
-      if (typeAheadTimer) {
-        clearTimeout(typeAheadTimer);
-      }
-
-      // Accumule la lettre dans searchQuery
-      searchQuery.value += key;
-
-      // Planifie la réinitialisation de searchQuery après 1000ms
-      typeAheadTimer = window.setTimeout(() => {
-        searchQuery.value = "";
-        typeAheadTimer = null;
-      }, 1000);
-
-      const idx = countries.findIndex(country =>
-        country.name.toLowerCase().startsWith(searchQuery.value)
-      );
-      if (idx !== -1) {
-        highlightedIndex.value = idx;
-        nextTick(() => {
-          if (countryOption.value[highlightedIndex.value]) {
-            countryOption.value[highlightedIndex.value].focus();
-          }
-        });
-      }
+      handleTypeAhead(event.key);
       return;
     }
-
-    // Gestion classique des autres touches
     switch (event.key) {
       case 'ArrowDown':
         highlightedIndex.value = (highlightedIndex.value + 1) % countries.length;
-        nextTick(() => {
-          countryOption.value[highlightedIndex.value]?.focus();
-        });
+        nextTick(() => countryOption.value[highlightedIndex.value]?.focus());
         break;
       case 'ArrowUp':
-        highlightedIndex.value =
-          (highlightedIndex.value - 1 + countries.length) % countries.length;
-        nextTick(() => {
-          countryOption.value[highlightedIndex.value]?.focus();
-        });
+        highlightedIndex.value = (highlightedIndex.value - 1 + countries.length) % countries.length;
+        nextTick(() => countryOption.value[highlightedIndex.value]?.focus());
         break;
       case 'Enter':
       case ' ':
