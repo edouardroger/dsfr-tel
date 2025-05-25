@@ -40,7 +40,7 @@
 <script lang="ts" setup>
 // Motif de conception ARIA suivi : https://www.w3.org/WAI/ARIA/apg/patterns/combobox/examples/combobox-select-only/
 import { ref, computed, onMounted, onBeforeUnmount, nextTick, PropType } from 'vue';
-import { parsePhoneNumber, getExampleNumber, AsYouType, PhoneNumber, CountryCode, validatePhoneNumberLength } from 'libphonenumber-js/max';
+import { parsePhoneNumber, parsePhoneNumberFromString, getExampleNumber, AsYouType, PhoneNumber, CountryCode, validatePhoneNumberLength } from 'libphonenumber-js/max';
 import examples from 'libphonenumber-js/examples.mobile.json';
 import countriesData from './countries.json';
 import timezoneToCountry from './timezones.json';
@@ -108,10 +108,10 @@ const props = defineProps({
     type: Object as PropType<Record<string, string>>,
     default: () => ({
       TOO_SHORT: "Le numéro de téléphone saisi est trop court.",
-      TOO_LONG: "Le numéro est trop long.",
+      TOO_LONG: "Le numéro de téléphone saisi est trop long.",
       INVALID_COUNTRY: "Le code du pays est invalide.",
-      INVALID_LENGTH: "Longueur non valide.",
-      NOT_A_NUMBER: "La valeur saisie n'est pas un numéro."
+      INVALID_LENGTH: "La longueur du numéro de téléphone saisi n'est pas valide.",
+      NOT_A_NUMBER: "La valeur saisie n'est pas un numéro de téléphone."
     })
   },
   hint: {
@@ -436,6 +436,18 @@ function getParsedPhoneNumber(): PhoneNumber | null {
   }
 }
 
+function getParsedPhoneNumberFromString(): PhoneNumber | null {
+  if (!phoneNumber.value) return null;
+  const parsed = parsePhoneNumberFromString(phoneNumber.value, selectedCountry.value);
+  return parsed || null;
+}
+
+function getPhoneNumberType(): string {
+  const parsed = getParsedPhoneNumberFromString();
+  if (!parsed) return '';
+  return parsed.getType() || '';
+}
+
 function validatePhoneNumber(): boolean {
   if (!phoneNumber.value && !props.required) {
     errorMessage.value = '';
@@ -485,6 +497,7 @@ defineExpose({
   phoneNumber,
   selectedCountry,
   getPhoneNumberFormatted,
+  getPhoneNumberType,
 });
 </script>
 
