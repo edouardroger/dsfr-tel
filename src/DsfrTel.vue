@@ -42,17 +42,11 @@
 import { ref, computed, onMounted, onBeforeUnmount, nextTick, PropType } from 'vue';
 import { parsePhoneNumber, parsePhoneNumberFromString, getExampleNumber, AsYouType, PhoneNumber, CountryCode, validatePhoneNumberLength } from 'libphonenumber-js/max';
 import examples from 'libphonenumber-js/examples.mobile.json';
-import countriesData from './countries.json';
 import timezoneToCountry from './timezones.json';
+import metadata from 'libphonenumber-js/metadata.min.json' with { type: 'json' };
+import countriesJson from './countries.json' with { type: 'json' };
 
 const uid = Math.random().toString(36).substr(2, 9);
-
-const countries: Country[] = countriesData.map((country: any) => ({
-  code: country.code as CountryCode,
-  name: country.name,
-  dialCode: country.dialCode,
-  flag: country.flag
-}));
 
 type Country = {
   code: CountryCode;
@@ -163,12 +157,51 @@ const numberTypeLabels: Record<string, string> = {
   'SPARE': 'Numéro de rechange'
 };
 
+// Fonction utilitaire pour obtenir l'emoji du drapeau à partir du code ISO
+function getFlagEmoji(countryCode: string): string {
+  const codePoints = countryCode
+    .toUpperCase()
+    .split('')
+    .map(char => 127397 + char.charCodeAt(0));
+  return String.fromCodePoint(...codePoints);
+}
+
+const countryMapping: Record<string, { name: string }> =
+  (countriesJson as Array<{ code: string; name: string }>).reduce((acc, curr) => {
+    acc[curr.code] = { name: curr.name };
+    return acc;
+  }, {} as Record<string, { name: string }>);
+
+const countries = Object.keys(metadata.countries)
+  .map((code) => {
+    let dialCode = '';
+    for (const [key, countryCodes] of Object.entries(metadata.country_calling_codes)) {
+      if ((countryCodes as string[]).includes(code)) {
+        dialCode = key;
+        break;
+      }
+    }
+    // On vérifie que l'indicatif existe pour n'inclure que les pays prévus par la norme E.164.
+    if (!dialCode) {
+      return null;
+    }
+    const countryData = countryMapping[code];
+    return {
+      code: code as CountryCode,
+      name: countryData ? countryData.name : code,
+      dialCode: dialCode,
+      flag: getFlagEmoji(code)
+    };
+  })
+  .filter((country): country is { code: CountryCode; name: string; dialCode: string; flag: string } => country !== null)
+  .sort((a, b) => a.name.localeCompare(b.name));
+
 const getSelectedCountry = computed(() => {
   return countries.find(country => country.code === selectedCountry.value) || {
     code: 'FR',
-    name: 'France',
+    name: 'France métropolitaine',
     dialCode: '33',
-    flag: '🇫🇷'
+    flag: getFlagEmoji('FR')
   };
 });
 
@@ -532,5 +565,9 @@ li[aria-selected="true"],
   background-color: var(--background-overlap-grey);
   box-shadow: 0 0 0 1px rgba(0, 0, 18, .16);
   scrollbar-width: thin;
+}
+
+.fr-menu__list--tel li {
+  display: block;
 }
 </style>
