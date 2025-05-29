@@ -1,7 +1,7 @@
 {
   "name": "dsfr-tel",
-  "version": "1.0.18",
-  "description": "Un composant de saisie de téléphone pour Vue.js 3 et le DSFR.",
+  "version": "1.0.19",
+  "description": "Un composant de saisie de téléphone pour Vue.js 3 et le DSFR et reposant sur Libphonenumber.",
   "main": "dist/dsfr-tel.umd.js",
   "module": "dist/dsfr-tel.es.js",
   "types": "dist/types/index.d.ts",
