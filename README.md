@@ -14,7 +14,7 @@ Il offre notamment :
 
 ## [Démonstration](https://edouardroger.github.io/dsfr-tel-demo/)
 
-<img width="480" alt="" src="https://github.com/user-attachments/assets/f7ab3883-60fe-4e4b-9a26-20514099c6d1" />
+<img width="507" alt="" src="https://github.com/user-attachments/assets/fb061e18-58a4-4873-b714-df63f5e2b97a" />
 
 ## Installation
 
@@ -61,19 +61,19 @@ Le composant accepte les paramètres suivants via des `props` :
   ```json
   {
     "TOO_SHORT": "Le numéro de téléphone saisi est trop court.",
-    "TOO_LONG": "Le numéro est trop long.",
+    "TOO_LONG": "Le numéro de téléphone saisi est trop long.",
     "INVALID_COUNTRY": "Le code du pays est invalide.",
-    "INVALID_LENGTH": "Longueur non valide.",
-    "NOT_A_NUMBER": "La valeur saisie n'est pas un numéro."
+    "INVALID_LENGTH": "La longueur du numéro de téléphone saisi n'est pas valide.",
+    "NOT_A_NUMBER": "La valeur saisie n'est pas un numéro de téléphone."
   }
   ```
 
 - **hint** (string)  
   Indication sur le format attendu.  
-  *Default :* `"Format : X"` où **X** est un exemple de format (au format national, fonction du pays sélectionné).
+  *Default :* `"Au format national (ex : X"` où **X** est un exemple de format (au format national, fonction du pays sélectionné).
 
 - **autoDetectCountry** (boolean)  
-  Active la détection automatique du pays de l’usager à partir de sa timezone.  
+  Active la détection automatique du pays de l’usager à partir de son fuseau horaire.  
   *Default :* `true`
 
 ## Méthodes
@@ -90,9 +90,9 @@ Le composant expose plusieurs méthodes :
   Retourne le numéro de téléphone au format demandé (national, international…).
 
 - **getPhoneNumberType() : string**  
-  Renvoie le type du numéro tel que retourné par Libphonenumber.
+  Renvoie le type du numéro tel que retourné par Libphonenumber ("MOBILE", par exemple, pour un numéro de téléphone portable).
 
-> **Note :** La détection du pays via la timezone s'effectue automatiquement lors du montage du composant si la prop `autoDetectCountry` est activée. La méthode `getDefaultCountryFromTimezone` récupère la timezone de l’usager pour définir le pays par défaut.
+> **Note :** La détection du pays via le fuseau horaire s'effectue automatiquement lors du montage du composant si la prop `autoDetectCountry` est activée. La méthode `getDefaultCountryFromTimezone` récupère le fuxeau horaire de l’usager pour définir le pays par défaut.
 
 ## Propriétés exposées
 
