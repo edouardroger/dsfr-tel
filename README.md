@@ -7,7 +7,7 @@ Dsfr-tel est un composant VueJS permettant de formater et de valider la saisie d
 Il offre notamment :
 
 - un champ de saisie du numéro de téléphone,
-- une liste déroulante pour sélectionner l'indicatif du pays correspondant,
+- une liste déroulante permettant de sélectionner l'indicatif du pays correspondant,
 - un formatage automatique du numéro (passage de l'international au format national, par exemple) y compris lors de la saisie,
 - une validation du numéro (présence, longueur, validité, type…),
 - la détection automatique du pays à partir du fuseau horaire (optionnelle via la prop `autoDetectCountry`).
@@ -19,10 +19,61 @@ Il offre notamment :
 ## Installation
 
 ```bash
-npm i dsfr-dsfr
+npm i dsfr-tel
 ```
 
-Remarque : veillez à aussi importer la feuille de style, qui apporte quelques modifications nécessaires.
+N'oubliez pas d'importer également la feuille de style nécessaire.
+
+## Utilisation
+
+Vous pouvez utiliser le composant de deux manières :
+
+### Utilisation globale (plugin)
+
+Installez le plugin dans le point d'entrée de votre application (par exemple dans `main.ts` ou `main.js`) :
+
+```typescript
+// filepath: /src/main.ts
+import { createApp } from 'vue';
+import App from './App.vue';
+import DsfrTelPlugin from 'dsfr-tel';
+
+const app = createApp(App);
+app.use(DsfrTelPlugin);
+app.mount('#app');
+```
+
+Une fois installé globalement, vous pouvez directement utiliser le composant :
+
+```vue
+<template>
+  <DsfrTel ref="dsfrTel" />
+</template>
+```
+
+### Utilisation locale
+
+Si vous préférez enregistrer le composant uniquement dans certains composants, importez le composant nommé et enregistrez-le localement :
+
+```vue
+<template>
+  <DsfrTel ref="dsfrTel" />
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue';
+import { DsfrTel } from 'dsfr-tel';
+
+const dsfrTel = ref();
+
+function onSubmit() {
+  if(dsfrTel.value.validatePhoneNumber()){
+    const formattedNumber = dsfrTel.value.getPhoneNumberFormatted('NATIONAL');
+    // …
+  }
+}
+</script>
+```
 
 ## Paramètres
 
@@ -100,29 +151,6 @@ Les propriétés accessibles sur le composant sont :
 
 - **phoneNumber** : le numéro de téléphone actuellement saisi.
 - **selectedCountry** : le code du pays sélectionné via la liste déroulante.
-
-## Utilisation
-
-Intégrez simplement le composant dans votre application comme suit :
-
-```vue
-<template>
-  <DsfrTel ref="dsfrTel" />
-</template>
-
-<script setup lang="ts">
-import DsfrTel from 'dsfr-dsfr';
-
-const dsfrTelRef = ref();
-
-function onSubmit() {
-  if(dsfrTelRef.value.validatePhoneNumber()){
-    const formattedNumber = dsfrTelRef.value.getPhoneNumberFormatted('NATIONAL');
-    // …
-  }
-}
-</script>
-```
 
 ## Personnalisation
 
