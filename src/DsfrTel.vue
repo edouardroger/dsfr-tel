@@ -231,21 +231,44 @@ const activeDescendant = computed(() => {
 
 const dialcodeLabel = computed(() => `Modifier l'indicatif sélectionné (${getSelectedCountry.value.name})`);
 
-function formatPhoneNumber(): void {
-  if (phoneNumber.value.startsWith('+')) {
+function handleInternationalNumber(input: string): boolean {
+  if (input.startsWith('+')) {
     try {
-      const parsedNum = parsePhoneNumber(phoneNumber.value);
+      const parsedNum = parsePhoneNumber(input);
       if (parsedNum && parsedNum.country) {
-        selectedCountry.value = parsedNum.country;
+        if (parsedNum.country !== selectedCountry.value) {
+          selectedCountry.value = parsedNum.country;
+          highlightedIndex.value = countries.findIndex(c => c.code === selectedCountry.value);
+        }
         phoneNumber.value = parsedNum.formatNational();
-        return;
+        return true;
       }
     } catch (error) {
-      // En cas d'erreur, on continue le formatage habituel
+      // En cas d'erreur, revenir au formatage local
     }
   }
+  return false;
+}
+
+function handleLocalNumber(input: string): boolean {
+  const parsedLocal = parsePhoneNumberFromString(input, selectedCountry.value);
+  if (parsedLocal) {
+    phoneNumber.value = parsedLocal.formatNational();
+    return true;
+  }
+  return false;
+}
+
+function handleGenericNumber(input: string): void {
   const formatter = new AsYouType(selectedCountry.value);
-  phoneNumber.value = formatter.input(phoneNumber.value);
+  phoneNumber.value = formatter.input(input);
+}
+
+function formatPhoneNumber(): void {
+  const input = phoneNumber.value;
+  if (handleInternationalNumber(input)) return;
+  if (handleLocalNumber(input)) return;
+  handleGenericNumber(input);
 }
 
 function handlePaste(event: ClipboardEvent): void {
