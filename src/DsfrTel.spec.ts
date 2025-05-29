@@ -45,7 +45,7 @@ describe('DsfrTel.vue', () => {
     await franceOption?.trigger('click');
 
     // Vérifie que le titre de la combobox a bien été mis à jour
-    expect(combobox.attributes('title')).toBe('Modifier le pays sélectionné : France');
+    expect(combobox.attributes('title')).toBe('Modifier l\'indicatif sélectionné (France métropolitaine)');
   });
 
   it('affiche une erreur si le numéro est trop court', async () => {
