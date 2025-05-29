@@ -5,11 +5,12 @@ import { resolve } from "path";
 import { configDefaults } from 'vitest/config';
 
 export default defineConfig({
-  plugins: [vue(),
-  dts({
-    outDir: 'dist/types',
-    insertTypesEntry: true,
-  }),
+  plugins: [
+    vue(),
+    dts({
+      outDir: 'dist/types',
+      insertTypesEntry: true,
+    }),
   ],
   build: {
     lib: {
@@ -22,7 +23,8 @@ export default defineConfig({
       output: {
         globals: {
           vue: "Vue"
-        }
+        },
+        exports: "named"
       }
     }
   },
