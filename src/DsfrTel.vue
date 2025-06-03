@@ -173,29 +173,46 @@ const countryMapping: Record<string, { name: string }> =
     return acc;
   }, {} as Record<string, { name: string }>);
 
-const countries = Object.keys(metadata.countries)
-  .map((code) => {
-    let dialCode = '';
-    for (const [key, countryCodes] of Object.entries(metadata.country_calling_codes)) {
-      if ((countryCodes as string[]).includes(code)) {
-        dialCode = key;
-        break;
+function buildCountries(): Country[] {
+  // Extraction des codes reconnus par E.164
+  const recognizedCountryCodes = new Set(Object.keys(metadata.countries));
+
+  // Liste d'exclusions manuelle (par exemple, "EH") et identification automatique des codes non reconnus dans countryMapping
+  const manualExclusion = new Set(["EH"]);
+  const nonRecognizedCodes = new Set(
+    Object.keys(countryMapping).filter(code => !recognizedCountryCodes.has(code))
+  );
+  const exclusionList = new Set([...manualExclusion, ...nonRecognizedCodes]);
+
+  // Construction et filtrage du tableau des pays
+  return Object.keys(metadata.countries)
+    .map((code) => {
+      let dialCode = '';
+      // Recherche de l'indicatif dans metadata.country_calling_codes
+      for (const [key, countryCodes] of Object.entries(metadata.country_calling_codes)) {
+        if ((countryCodes as string[]).includes(code)) {
+          dialCode = key;
+          break;
+        }
       }
-    }
-    // On vérifie que l'indicatif existe pour n'inclure que les pays prévus par la norme E.164.
-    if (!dialCode) {
-      return null;
-    }
-    const countryData = countryMapping[code];
-    return {
-      code: code as CountryCode,
-      name: countryData ? countryData.name : code,
-      dialCode: dialCode,
-      flag: getFlagEmoji(code)
-    };
-  })
-  .filter((country): country is { code: CountryCode; name: string; dialCode: string; flag: string } => country !== null)
-  .sort((a, b) => a.name.localeCompare(b.name));
+      if (!dialCode) return null;
+      const countryData = countryMapping[code];
+      return {
+        code: code as CountryCode,
+        name: countryData ? countryData.name : code,
+        dialCode: dialCode,
+        flag: getFlagEmoji(code)
+      };
+    })
+    .filter((country): country is Country =>
+      country !== null &&
+      recognizedCountryCodes.has(country.code) &&
+      !exclusionList.has(country.code)
+    )
+    .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+const countries = buildCountries();
 
 const getSelectedCountry = computed(() => {
   return countries.find(country => country.code === selectedCountry.value) || {
