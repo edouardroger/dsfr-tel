@@ -28,9 +28,9 @@
     </div>
     <div class="fr-fieldset__element fr-fieldset__element--inline fr-fieldset__element--tel">
       <input v-model="phoneNumber" @input="formatPhoneNumber" @paste="handlePaste" :placeholder="placeholder"
-        class="fr-input" type="tel" aria-label="Numéro de téléphone" title="Numéro de téléphone" id="tel-input"
-        aria-describedby="tel-input-message" ref="telInput" autocomplete="tel-national"
-        :aria-invalid="errorMessage ? 'true' : undefined" />
+        class="fr-input" type="text" inputmode="tel" aria-label="Numéro de téléphone" title="Numéro de téléphone"
+        id="tel-input" :aria-describedby="errorMessage ? 'tel-input-message' : undefined" ref="telInput"
+        autocomplete="tel-national" :aria-invalid="errorMessage ? 'true' : undefined" />
     </div>
     <p v-if="errorMessage" class="fr-fieldset__element fr-message fr-message--error" id="tel-input-message">
       {{ errorMessage }}
