@@ -12,6 +12,8 @@ Il offre notamment :
 - une validation du numéro (présence, longueur, validité, type…),
 - la détection automatique du pays à partir du fuseau horaire (optionnelle via la prop `autoDetectCountry`).
 
+**Ce composant n'est pas proposé par le Service d'information du Gouvernemnt**.
+
 ## [Démonstration](https://edouardroger.github.io/dsfr-tel-demo/)
 
 <img width="507" alt="" src="https://github.com/user-attachments/assets/fb061e18-58a4-4873-b714-df63f5e2b97a" />
