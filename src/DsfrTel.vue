@@ -223,28 +223,35 @@ const getSelectedCountry = computed(() => {
   };
 });
 
+const phoneExample = computed(() => {
+  return getExampleNumber(selectedCountry.value, examples);
+});
+
 const placeholder = computed(() => {
   if (props.placeholder !== undefined) {
     return props.placeholder;
   }
-  if (props.useDynamicPlaceholder) {
-    const example = getExampleNumber(selectedCountry.value, examples);
-    return example ? `${props.placeholderPrefix}${example.formatNational()}` : undefined;
+  if (props.useDynamicPlaceholder && phoneExample.value) {
+    return `${props.placeholderPrefix}${phoneExample.value.formatNational()}`;
   }
   return undefined;
 });
 
 const computedHint = computed(() => {
-  const example = getExampleNumber(selectedCountry.value, examples);
-  const defaultHint = example ? `Au format national (ex : ${example.formatNational()})` : '';
+  const defaultHint = phoneExample.value
+    ? `Au format national (ex : ${phoneExample.value.formatNational()})`
+    : '';
   return props.hint || defaultHint;
 });
 
 const activeDescendant = computed(() => {
-  if (isDropdownOpen.value && highlightedIndex.value >= 0 && countries[highlightedIndex.value]) {
-    return `fr-country-option-${uid}-${countries[highlightedIndex.value].code}`;
-  }
-  return undefined;
+  const currentCountry = isDropdownOpen.value &&
+    highlightedIndex.value >= 0 &&
+    countries[highlightedIndex.value];
+
+  return currentCountry
+    ? `fr-country-option-${uid}-${currentCountry.code}`
+    : undefined;
 });
 
 const dialcodeLabel = computed(() => `Modifier l'indicatif sélectionné (${getSelectedCountry.value.name})`);
