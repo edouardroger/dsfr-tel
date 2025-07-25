@@ -1,10 +1,10 @@
 <template>
-  <fieldset class="fr-fieldset" :class="{ 'fr-fieldset--error': errorMessage }">
+  <fieldset class="fr-fieldset fr-fieldset--phone" :class="{ 'fr-fieldset--error': errorMessage }">
     <legend class="fr-fieldset__legend">
       {{ fieldsetLegend }}
       <span class="fr-hint-text">{{ computedHint }}</span>
     </legend>
-    <div class="fr-fieldset__element fr-fieldset__element--inline fr-fieldset--dialcode">
+    <div class="fr-fieldset__element fr-fieldset__element--inline">
       <!-- Div recevant le focus et servant de combobox -->
       <div class="fr-select" ref="comboboxRef" role="combobox" tabindex="0" aria-haspopup="listbox"
         :aria-controls="'fr-country-listbox-' + uid" :aria-expanded="isDropdownOpen"
@@ -26,7 +26,7 @@
         </li>
       </ul>
     </div>
-    <div class="fr-fieldset__element fr-fieldset__element--inline fr-fieldset__element--tel">
+    <div class="fr-fieldset__element fr-fieldset__element--inline">
       <input v-model="phoneNumber" @input="formatPhoneNumber" @paste="handlePaste" :placeholder="placeholder"
         class="fr-input" type="text" inputmode="tel" aria-label="Numéro de téléphone" title="Numéro de téléphone"
         id="tel-input" :aria-describedby="errorMessage ? 'tel-input-message' : undefined" ref="telInput"
@@ -587,15 +587,13 @@ defineExpose({
   cursor: pointer;
 }
 
+.fr-fieldset--phone {
+  align-items: stretch;
+}
+
 li[aria-selected="true"],
 .fr-menu__list--tel li:hover {
   background-color: var(--background-open-blue-france);
-}
-
-.fr-fieldset__element--tel {
-  margin-bottom: .5rem;
-  flex: 0 0 13rem;
-  padding-left: 0;
 }
 
 .fr-menu--tel {
