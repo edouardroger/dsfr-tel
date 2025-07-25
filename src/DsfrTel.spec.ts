@@ -5,9 +5,9 @@ import DsfrTel from './DsfrTel.vue';
 describe('DsfrTel.vue', () => {
   it('affiche le champ de saisie', async () => {
     const wrapper = mount(DsfrTel);
-    const input = wrapper.get('input[type="tel"]');
+    const input = wrapper.get('input[inputmode="tel"]');
     expect(input.isVisible()).toBe(true);
-    expect(input.attributes('type')).toBe('tel');
+    expect(input.attributes('type')).toBe('text');
   });
 
   it('ouvre et ferme le menu déroulant de sélection de pays', async () => {
@@ -50,7 +50,7 @@ describe('DsfrTel.vue', () => {
 
   it('affiche une erreur si le numéro est trop court', async () => {
     const wrapper = mount(DsfrTel);
-    const input = wrapper.get('input[type="tel"]');
+    const input = wrapper.get('input[inputmode="tel"]');
 
     await input.setValue('1234');
 
@@ -63,7 +63,7 @@ describe('DsfrTel.vue', () => {
   it('affiche une erreur si le champ est vide', async () => {
     // Pour tester l'erreur sur champ vide, le champ doit être requis
     const wrapper = mount(DsfrTel, { props: { required: true } });
-    const input = wrapper.get('input[type="tel"]');
+    const input = wrapper.get('input[inputmode="tel"]');
 
     await input.setValue('');
 
@@ -79,7 +79,7 @@ describe('DsfrTel.vue', () => {
         expectedTypes: ['MOBILE']
       }
     });
-    const input = wrapper.get('input[type="tel"]');
+    const input = wrapper.get('input[inputmode="tel"]');
 
     await input.setValue('+33123456789'); // Numéro fixe français
     await wrapper.vm.validatePhoneNumber();
@@ -89,7 +89,7 @@ describe('DsfrTel.vue', () => {
 
   it('valide un numéro correct', async () => {
     const wrapper = mount(DsfrTel);
-    const input = wrapper.get('input[type="tel"]');
+    const input = wrapper.get('input[inputmode="tel"]');
 
     await input.setValue('+33612345678'); // Numéro de portable français valide
     await wrapper.vm.validatePhoneNumber();
