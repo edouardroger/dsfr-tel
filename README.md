@@ -83,7 +83,28 @@ Le composant accepte les paramètres suivants via des `props` :
 
 - **expectedTypes** (Array\<string\>)  
   Définit les types de numéros autorisés.  
-  *Default :* `['MOBILE', 'FIXED_LINE_OR_MOBILE']`
+  *Default :* `['MOBILE', 'FIXED_LINE_OR_MOBILE']`  
+  
+  **Remarque :** Les valeurs possibles pour les types sont celles retournées par la bibliothèque [libphonenumber-js](https://gitlab.com/catamphetamine/libphonenumber-js), par exemple :  
+
+  - `MOBILE` (Portable)  
+  - `FIXED_LINE` (Fixe)  
+  - `FIXED_LINE_OR_MOBILE` (Fixe ou portable)  
+  - `TOLL_FREE` (Numéro gratuit)  
+  - `PREMIUM_RATE` (Numéro surtaxé)  
+  - `VOIP` (Numéro de VoIP)  
+  - `PERSONAL_NUMBER` (Numéro personnel)  
+  - `PAGER` (Numéro de bipeur)  
+  - `UAN` (Numéro universel)  
+  - `UNKNOWN` (Type inconnu)  
+  - `FAX` (Fax)  
+  - `SHARED_COST` (Numéro à coût partagé)  
+  - `SATELLITE` (Numéro satellite)  
+  - `EMERGENCY` (Numéro d'urgence)  
+  - `VOICEMAIL` (Messagerie vocale)  
+  - `SPARE` (Numéro de rechange)  
+
+  Ces valeurs sont traduites automatiquement dans l'interface grâce à la table de concordance `numberTypeLabels`.
 
 - **fieldsetLegend** (string)  
   Texte affiché dans la légende du regroupement de champs.  
