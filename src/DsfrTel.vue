@@ -9,17 +9,18 @@
       <div class="fr-select" ref="comboboxRef" role="combobox" tabindex="0" aria-haspopup="listbox"
         :aria-controls="'fr-country-listbox-' + uid" :aria-expanded="isDropdownOpen"
         :aria-activedescendant="activeDescendant" @click="toggleDropdown" @keydown="onComboboxKeydown"
-        :title="dialcodeLabel" :aria-label="dialcodeLabel">
+        :title="dialcodeLabel">
         <span aria-hidden="true" class="flag-indicatif">{{ getSelectedCountry.flag }}</span>
+        <span class="fr-sr-only">{{ getSelectedCountry.name }}</span>
       </div>
     </div>
     <div class="fr-menu fr-menu--tel" v-if="isDropdownOpen">
-      <ul :id="'fr-country-listbox-' + uid" role="listbox" tabindex="-1" @keydown="handleKeydown" ref="dropdownMenu"
+      <ul :id="'fr-country-listbox-' + uid" role="listbox" tabindex="-1" @keydown="handleKeydown"
         aria-label="Liste de sélection de l'indicatif" style="max-height:200px;overflow-y:auto;"
         class="fr-menu__list fr-menu__list--tel">
         <li v-for="(country, index) in countries" :key="country.code" role="option" @click="selectCountry(country)"
           :aria-selected="country.code === selectedCountry ? 'true' : 'false'" :class="{ 'fr-nav__link': true }"
-          @mouseover="highlightedIndex = index" @mouseleave="highlightedIndex = -1" ref="countryOption"
+          ref="countryOption"
           :id="'fr-country-option-' + uid + '-' + country.code" :tabindex="index === highlightedIndex ? 0 : -1">
           <span aria-hidden="true" class="flag-indicatif">{{ country.flag }}</span>
           {{ country.name }} (+{{ country.dialCode }})
@@ -129,7 +130,6 @@ const errorMessage = ref<string>('');
 const isDropdownOpen = ref<boolean>(false);
 const highlightedIndex = ref<number>(-1);
 
-const dropdownMenu = ref<HTMLElement | null>(null);
 const countryOption = ref<HTMLElement[]>([]);
 const telInput = ref<HTMLInputElement | null>(null);
 const comboboxRef = ref<HTMLElement | null>(null);
@@ -406,7 +406,7 @@ function onComboboxKeydown(event: KeyboardEvent): void {
   switch (event.key) {
     case 'ArrowDown':
       if (!isDropdownOpen.value) {
-        toggleDropdown();
+        isDropdownOpen.value = true;
         highlightedIndex.value = 0;
         nextTick(() => countryOption.value[highlightedIndex.value]?.focus());
       } else {
@@ -417,7 +417,7 @@ function onComboboxKeydown(event: KeyboardEvent): void {
       break;
     case 'ArrowUp':
       if (!isDropdownOpen.value) {
-        toggleDropdown();
+        isDropdownOpen.value = true;
         highlightedIndex.value = countries.length - 1;
         nextTick(() => countryOption.value[highlightedIndex.value]?.focus());
       } else {
