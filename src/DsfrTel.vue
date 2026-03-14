@@ -27,7 +27,7 @@
       </ul>
     </div>
     <div class="fr-fieldset__element fr-fieldset__element--inline">
-      <input v-model="phoneNumber" @input="formatPhoneNumber" @paste="handlePaste" :placeholder="placeholder"
+      <input :value="phoneNumber" @input="onPhoneInput" @paste="handlePaste" :placeholder="placeholder"
         class="fr-input" type="text" inputmode="tel" aria-label="Numéro de téléphone" title="Numéro de téléphone"
         id="tel-input" :aria-describedby="errorMessage ? 'tel-input-message' : undefined" ref="telInput"
         autocomplete="tel-national" :aria-invalid="errorMessage ? 'true' : undefined" />
@@ -287,6 +287,42 @@ function handleLocalNumber(input: string): boolean {
 function handleGenericNumber(input: string): void {
   const formatter = new AsYouType(selectedCountry.value);
   phoneNumber.value = formatter.input(input);
+}
+
+function countDigits(str: string): number {
+  return str.replace(/\D/g, '').length;
+}
+
+function findPositionAfterDigits(formatted: string, digitsCount: number): number {
+  let count = 0;
+  for (let i = 0; i < formatted.length; i++) {
+    if (/\d/.test(formatted[i])) {
+      count++;
+      if (count > digitsCount) {
+        return i;
+      }
+    }
+  }
+  return formatted.length;
+}
+
+function onPhoneInput(event: Event): void {
+  const target = event.target as HTMLInputElement;
+  const inputValue = target.value;
+  const cursorPos = target.selectionStart || 0;
+  const oldLength = phoneNumber.value.length;
+  const digitsBefore = countDigits(inputValue.substring(0, cursorPos));
+  phoneNumber.value = inputValue;
+  if (inputValue.length >= oldLength) {
+    formatPhoneNumber();
+    nextTick(() => {
+      if (telInput.value) {
+        const newPos = findPositionAfterDigits(phoneNumber.value, digitsBefore);
+        telInput.value.setSelectionRange(newPos, newPos);
+      }
+    });
+  }
+  // Pour les suppressions, ne pas formater pour permettre la suppression sans remise en forme
 }
 
 function formatPhoneNumber(): void {
