@@ -20,18 +20,18 @@
         class="fr-menu__list fr-menu__list--tel">
         <li v-for="(country, index) in countries" :key="country.code" role="option" @click="selectCountry(country)"
           :aria-selected="country.code === selectedCountry ? 'true' : 'false'" :class="{ 'fr-nav__link': true }"
-          ref="countryOption"
-          :id="'fr-country-option-' + uid + '-' + country.code" :tabindex="index === highlightedIndex ? 0 : -1">
+          ref="countryOption" :id="'fr-country-option-' + uid + '-' + country.code"
+          :tabindex="index === highlightedIndex ? 0 : -1">
           <span aria-hidden="true" class="flag-indicatif">{{ country.flag }}</span>
           {{ country.name }} (+{{ country.dialCode }})
         </li>
       </ul>
     </div>
     <div class="fr-fieldset__element fr-fieldset__element--inline">
-      <input :value="phoneNumber" @input="onPhoneInput" @paste="handlePaste" :placeholder="placeholder"
-        class="fr-input" type="text" inputmode="tel" aria-label="Numéro de téléphone" title="Numéro de téléphone"
-        id="tel-input" :aria-describedby="errorMessage ? 'tel-input-message' : undefined" ref="telInput"
-        autocomplete="tel-national" :aria-invalid="errorMessage ? 'true' : undefined" />
+      <input :value="phoneNumber" @input="onPhoneInput" @paste="handlePaste" :placeholder="placeholder" class="fr-input"
+        type="text" inputmode="tel" aria-label="Numéro de téléphone" title="Numéro de téléphone" id="tel-input"
+        :aria-describedby="errorMessage ? 'tel-input-message' : undefined" ref="telInput" autocomplete="tel-national"
+        :aria-invalid="errorMessage ? 'true' : undefined" />
     </div>
     <p v-if="errorMessage" class="fr-fieldset__element fr-message fr-message--error" id="tel-input-message">
       {{ errorMessage }}
@@ -49,7 +49,7 @@ import metadata from 'libphonenumber-js/metadata.min.json' with { type: 'json' }
 import countriesJson from './countries.json' with { type: 'json' };
 
 const uid = Math.random().toString(36).substr(2, 9);
-
+const MAX_INPUT_LENGTH = 30;
 type Country = {
   code: CountryCode;
   name: string;
@@ -257,6 +257,7 @@ const activeDescendant = computed(() => {
 const dialcodeLabel = computed(() => `Modifier l'indicatif sélectionné (${getSelectedCountry.value.name})`);
 
 function handleInternationalNumber(input: string): boolean {
+  if (input.length > MAX_INPUT_LENGTH) return false;
   if (input.startsWith('+')) {
     try {
       const parsedNum = parsePhoneNumber(input);
@@ -276,6 +277,7 @@ function handleInternationalNumber(input: string): boolean {
 }
 
 function handleLocalNumber(input: string): boolean {
+  if (input.length > MAX_INPUT_LENGTH) return false;
   const parsedLocal = parsePhoneNumberFromString(input, selectedCountry.value);
   if (parsedLocal) {
     phoneNumber.value = parsedLocal.formatNational();
@@ -285,6 +287,7 @@ function handleLocalNumber(input: string): boolean {
 }
 
 function handleGenericNumber(input: string): void {
+  if (input.length > MAX_INPUT_LENGTH) return;
   const formatter = new AsYouType(selectedCountry.value);
   phoneNumber.value = formatter.input(input);
 }
@@ -308,11 +311,18 @@ function findPositionAfterDigits(formatted: string, digitsCount: number): number
 
 function onPhoneInput(event: Event): void {
   const target = event.target as HTMLInputElement;
-  const inputValue = target.value;
+  let inputValue = target.value;
+
+  inputValue = sanitizePhoneInput(inputValue);
+
   const cursorPos = target.selectionStart || 0;
   const oldLength = phoneNumber.value.length;
   const digitsBefore = countDigits(inputValue.substring(0, cursorPos));
+
+  if (inputValue.length > MAX_INPUT_LENGTH) return;
+
   phoneNumber.value = inputValue;
+
   if (inputValue.length >= oldLength) {
     formatPhoneNumber();
     nextTick(() => {
@@ -322,7 +332,6 @@ function onPhoneInput(event: Event): void {
       }
     });
   }
-  // Pour les suppressions, ne pas formater pour permettre la suppression sans remise en forme
 }
 
 function formatPhoneNumber(): void {
@@ -334,8 +343,9 @@ function formatPhoneNumber(): void {
 
 function handlePaste(event: ClipboardEvent): void {
   event.preventDefault();
-  const pastedText = event.clipboardData?.getData('text/plain') || '';
-  phoneNumber.value = pastedText;
+  const raw = event.clipboardData?.getData('text/plain') || '';
+  const safe = sanitizePhoneInput(raw);
+  phoneNumber.value = safe;
   nextTick(() => formatPhoneNumber());
 }
 
@@ -596,6 +606,15 @@ function getDefaultCountryFromTimezone(): CountryCode {
   const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const countryCode = timezoneToCountryTyped[userTimezone] || 'FR';
   return countryCode as CountryCode;
+}
+
+function sanitizePhoneInput(input: string): string {
+  return input
+    .normalize('NFKC')
+    .replace(/[\u202A-\u202E]/g, '')
+    .replace(/[^\d+()\-\s.]/g, '')
+    .replace(/(?!^)\+/g, '')
+    .slice(0, MAX_INPUT_LENGTH);
 }
 
 onMounted(() => {
