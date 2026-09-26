@@ -386,6 +386,8 @@ app.config.idPrefix = 'formulaire-contact';
 
 ## Développement
 
+Node.js 22.12 ou plus récent est nécessaire pour développer le composant (Vite 8, Vitest 5).
+
 ```bash
 npm ci
 npm run dev           # démonstration locale (dossier demo/)

@@ -34,15 +34,15 @@
   "devDependencies": {
     "@testing-library/jest-dom": "^6.6.3",
     "@types/node": "^22.9.3",
-    "@vitejs/plugin-vue": "^5.2.0",
-    "@vitest/coverage-v8": "^4.1.11",
+    "@vitejs/plugin-vue": "^6.0.9",
+    "@vitest/coverage-v8": "^5.0.1",
     "@vue/test-utils": "^2.4.6",
     "axe-core": "^4.13.0",
     "jsdom": "^26.1.0",
     "typescript": "^5.7.2",
-    "vite": "^6.3.5",
+    "vite": "^8.3.0",
     "vite-plugin-dts": "^4.5.3",
-    "vitest": "^4.1.8",
+    "vitest": "^5.0.1",
     "vue": "^3.5.13",
     "vue-tsc": "^2.2.10"
   },
@@ -85,9 +85,5 @@
     "libphonenumber",
     "rgaa",
     "accessibilite"
-  ],
-  "allowScripts": {
-    "esbuild": true,
-    "fsevents@2.3.3": true
-  }
+  ]
 }

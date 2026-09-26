@@ -6,7 +6,13 @@ updates:
       interval: weekly
     cooldown:
       default-days: 7
+    ignore:
+      # TypeScript 7 : pas encore pris en charge par vue-tsc ni vite-plugin-dts.
+      - dependency-name: typescript
+        update-types: ['version-update:semver-major']
     groups:
+      vite:
+        patterns: ['vite', 'vite-*', '@vitejs/*', 'vitest', '@vitest/*']
       outillage:
         dependency-type: development
         update-types: [minor, patch]
