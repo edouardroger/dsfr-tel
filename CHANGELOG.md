@@ -3,7 +3,7 @@
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) ; le projet suit le
 [versionnage sémantique](https://semver.org/lang/fr/).
 
-## [1.1.0] — non publiée
+## [1.1.0] — 2026-09-26
 
 ### À vérifier avant de mettre à jour
 
@@ -59,8 +59,7 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) ; le
 
 ### Performances
 
-- Paquet npm : 457 ko → 111 ko (2,0 Mo → 488 ko décompressé), variante mobile, cartes
-  de sources et journal compris.
+- Paquet npm : 457 ko → 92 ko (2,0 Mo → 341 ko décompressé), variante mobile et journal compris.
 - Suppression de la copie dupliquée des métadonnées (`metadata.min.json`) et de
   `countries.json`.
 - Liste des pays construite une fois par langue et mise en cache, au lieu d’une fois par
