@@ -3,6 +3,13 @@
 Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) ; le projet suit le
 [versionnage sémantique](https://semver.org/lang/fr/).
 
+# [Non publiée]
+
+### Maintenance
+
+- Outillage de développement : Vite 8, Vitest 5 et `@vitejs/plugin-vue` 6. Aucun changement
+  pour les applications qui utilisent le composant.
+
 ## [1.1.0] — 2026-09-26
 
 ### À vérifier avant de mettre à jour
