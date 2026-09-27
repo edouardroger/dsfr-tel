@@ -1,4 +1,5 @@
 # Dsfr-tel
+[![CI](https://github.com/edouardroger/dsfr-tel/actions/workflows/ci.yml/badge.svg)](https://github.com/edouardroger/dsfr-tel/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/dsfr-tel)](https://www.npmjs.com/package/dsfr-tel)
 
 ## Qu'est-ce ?
