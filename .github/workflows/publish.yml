@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      id-token: write # échange du jeton OIDC contre un jeton de publication éphémère
+      id-token: write # échange du jeton OIDC contre un jeton de publication éphémère (Trusted Publishing)
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -27,10 +27,10 @@ jobs:
       # Sans registry-url : un _authToken vide empêcherait l'authentification OIDC.
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: '22'
+          node-version: '24'
 
       - name: Utiliser un npm compatible OIDC (11.5.1 ou plus récent)
-        run: npm install --global npm@latest
+        run: npm install --global npm@11
 
       - name: Installer les dépendances
         run: npm ci
@@ -45,14 +45,20 @@ jobs:
             exit 1
           fi
 
+      - name: Vérifier la note de version dans CHANGELOG.md
+        run: node scripts/changelog.mjs notes "$(node -p "require('./package.json').version")" > /dev/null
+
       - name: Vérifier les types
         run: npm run typecheck
 
-      - name: Tests unitaires
-        run: npm test
+      - name: Tests unitaires, accessibilité (axe) et seuils de couverture
+        run: npm run test:coverage
 
       - name: Construire la librairie
         run: npm run build
+
+      - name: Vérifier le build UMD sans outil de build
+        run: npm run test:umd
 
       - name: Publier si la version n'existe pas déjà
         run: |
@@ -62,4 +68,31 @@ jobs:
             echo "$name@$version est déjà publié : rien à faire."
             exit 0
           fi
-          npm publish --access public
+          npm publish --ignore-scripts
+
+  release:
+    name: Créer la release GitHub
+    needs: publier
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # création de la release
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Créer la release à partir de la section du CHANGELOG
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -eo pipefail
+          if gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
+            echo "La release $GITHUB_REF_NAME existe déjà : rien à faire."
+            exit 0
+          fi
+          version="${GITHUB_REF_NAME#v}"
+          node scripts/changelog.mjs notes "$version" > notes.md
+          flags=()
+          if [[ "$version" == *-* ]]; then flags+=(--prerelease); fi
+          gh release create "$GITHUB_REF_NAME" --verify-tag --title "$version" --notes-file notes.md "${flags[@]}"

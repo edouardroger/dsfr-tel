@@ -388,7 +388,7 @@ app.config.idPrefix = 'formulaire-contact';
 
 ## Développement
 
-Node.js 22.12 ou plus récent est nécessaire pour développer le composant (Vite 8, Vitest 5).
+Node.js 22.22.2 ou plus récent est nécessaire pour développer le composant (Vite 8, Vitest 5, jsdom 30).
 
 ```bash
 npm ci
@@ -398,27 +398,22 @@ npm run test:coverage # idem, avec seuils de couverture
 npm run typecheck     # vue-tsc
 npm run build         # librairie → dist/
 npm run build:demo    # site de démonstration → dist-demo/
+npm run check         # toutes les vérifications, comme avant une publication
 ```
 
 ## Publication
 
-Le workflow `.github/workflows/publish.yml` publie le paquet sur npm à chaque tag `vX.Y.Z` :
+La publication est automatisée (`.github/workflows/publish.yml`) par [Trusted Publishing](https://docs.npmjs.com/trusted-publishers) : aucun jeton npm n'est stocké dans le dépôt, et chaque version est accompagnée d'une attestation de provenance.
+
+Au fil des modifications, décrivez-les dans la section `## [Non publiée]` en tête de `CHANGELOG.md`. Pour publier, une seule commande, dépôt à jour et sans modification en attente :
 
 ```bash
-npm version patch   # ou minor / major
-git push --follow-tags
+npm version minor   # patch pour une correction, major pour un changement cassant
 ```
 
-Il vérifie que le tag correspond à la version du `package.json`, rejoue les types, les tests
-et le build, puis publie — sans rien faire si la version est déjà en ligne, ce qui rend les
-relances sans effet de bord.
+Elle vérifie que la section « Non publiée » est remplie et rejoue toutes les vérifications (`npm run check`), puis met à jour le numéro de version, renomme la section avec ce numéro et la date du jour, crée le commit « Version x.y.z » et son tag, et pousse le tout. Le tag déclenche la publication sur npm, puis la création de la release GitHub avec la section correspondante du journal.
 
-L'authentification repose sur la **publication de confiance** (OIDC) : aucun jeton npm n'est
-stocké dans le dépôt, et l'attestation de provenance est générée automatiquement. Une
-configuration est nécessaire une seule fois sur npmjs.com : page du paquet → *Settings* →
-*Trusted Publisher* → *GitHub Actions*, avec le dépôt et le nom de fichier `publish.yml`.
-Vérifiez-y que l'action `npm publish` est autorisée : les configurations récentes n'autorisent
-par défaut que la publication en deux temps.
+La publication échoue si le tag ne correspond pas à la version du `package.json` ou si le journal n'a pas de section datée pour cette version, et ne fait rien si la version existe déjà sur npm.
 
 ## Démonstration et DSFR
 
