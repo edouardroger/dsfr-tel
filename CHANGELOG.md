@@ -5,6 +5,8 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) ; le
 
 ## [Non publiée]
 
+## [1.1.1] — 2026-09-27
+
 ### Maintenance
 
 - Outillage de développement : Vite 8, Vitest 5 et `@vitejs/plugin-vue` 6. Aucun changement
