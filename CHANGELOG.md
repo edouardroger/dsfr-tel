@@ -5,6 +5,8 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) ; le
 
 ## [Non publiée]
 
+## [1.1.1] — 2026-10-10
+
 ### Corrections
 
 - `errorMessages` et `reasonMessages` acceptent une surcharge partielle : les clés absentes
