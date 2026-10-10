@@ -122,6 +122,22 @@ type ErrorMessages = {
 type PhoneFormat = 'E164' | 'NATIONAL' | 'INTERNATIONAL' | 'RFC3966';
 
 const MAX_INPUT_LENGTH = 30;
+
+const DEFAULT_ERROR_MESSAGES: Readonly<ErrorMessages> = {
+  required: 'La saisie du numéro de téléphone est requise.',
+  invalid: 'Le numéro renseigné est incorrect. Veuillez le vérifier.',
+  incorrectType: 'Le numéro doit être de type {types}.',
+  unknown: 'Erreur lors de la validation du numéro.',
+  parse: "Erreur lors de l'analyse du numéro."
+};
+
+const DEFAULT_REASON_MESSAGES: Readonly<Record<string, string>> = {
+  TOO_SHORT: 'Le numéro de téléphone saisi est trop court.',
+  TOO_LONG: 'Le numéro de téléphone saisi est trop long.',
+  INVALID_COUNTRY: 'Le code du pays est invalide.',
+  INVALID_LENGTH: "La longueur du numéro de téléphone saisi n'est pas valide.",
+  NOT_A_NUMBER: "La valeur saisie n'est pas un numéro de téléphone."
+};
 const TYPE_AHEAD_DELAY = 500;
 const PAGE_SIZE = 10;
 
@@ -137,29 +153,12 @@ const props = defineProps({
   locale: { type: String, default: undefined },
   inputLabel: { type: String, default: 'Numéro de téléphone' },
   labels: { type: Object as PropType<Partial<Labels>>, default: () => ({}) },
-  errorMessages: {
-    type: Object as PropType<ErrorMessages>,
-    default: () => ({
-      required: 'La saisie du numéro de téléphone est requise.',
-      invalid: 'Le numéro renseigné est incorrect. Veuillez le vérifier.',
-      incorrectType: 'Le numéro doit être de type {types}.',
-      unknown: 'Erreur lors de la validation du numéro.',
-      parse: "Erreur lors de l'analyse du numéro."
-    })
-  },
+  // Surcharge partielle possible : les clés absentes reprennent les valeurs par défaut.
+  errorMessages: { type: Object as PropType<Partial<ErrorMessages>>, default: () => ({}) },
   placeholder: { type: String, default: undefined },
   placeholderPrefix: { type: String, default: 'Ex. : ' },
   useDynamicPlaceholder: { type: Boolean, default: false },
-  reasonMessages: {
-    type: Object as PropType<Record<string, string>>,
-    default: () => ({
-      TOO_SHORT: 'Le numéro de téléphone saisi est trop court.',
-      TOO_LONG: 'Le numéro de téléphone saisi est trop long.',
-      INVALID_COUNTRY: 'Le code du pays est invalide.',
-      INVALID_LENGTH: "La longueur du numéro de téléphone saisi n'est pas valide.",
-      NOT_A_NUMBER: "La valeur saisie n'est pas un numéro de téléphone."
-    })
-  },
+  reasonMessages: { type: Object as PropType<Record<string, string>>, default: () => ({}) },
   hint: { type: String, default: '' },
   required: { type: Boolean, default: false },
   requiredMarker: { type: String, default: '*' },
@@ -198,6 +197,17 @@ const text = computed<Labels>(() => ({
   ...props.labels,
   types: { ...defaultLabels.types, ...props.labels.types }
 }));
+
+const errors = computed<ErrorMessages>(() => ({ ...DEFAULT_ERROR_MESSAGES, ...props.errorMessages }));
+const reasons = computed<Record<string, string>>(() => ({
+  ...DEFAULT_REASON_MESSAGES,
+  ...props.reasonMessages
+}));
+
+/** Remplace `{clé}` sans interpréter les motifs spéciaux (`$&`, `$'`…) de String.replace. */
+function fill(template: string, key: string, value: string): string {
+  return template.replace(`{${key}}`, () => value);
+}
 
 const locale = computed(
   () =>
@@ -243,7 +253,7 @@ const placeholder = computed(() => {
 const computedHint = computed(() => {
   if (props.hint) return props.hint;
   return phoneExample.value
-    ? text.value.hint.replace('{example}', phoneExample.value.formatNational())
+    ? fill(text.value.hint, 'example', phoneExample.value.formatNational())
     : '';
 });
 
@@ -253,7 +263,7 @@ const activeDescendant = computed(() => {
 });
 
 const dialcodeLabel = computed(
-  () => text.value.changeCountry.replace('{country}', selectedCountryData.value.name)
+  () => fill(text.value.changeCountry, 'country', selectedCountryData.value.name)
 );
 
 function parse(value: string = phoneNumber.value): PhoneNumber | null {
@@ -261,11 +271,12 @@ function parse(value: string = phoneNumber.value): PhoneNumber | null {
   return parsePhoneNumberFromString(value, selectedCountry.value) ?? null;
 }
 
+// Liste blanche stricte : chiffres ASCII (après NFKC), « + », parenthèses, tiret, point et espace.
+// Écarte retours à la ligne, tabulations, séparateurs Unicode et caractères bidirectionnels.
 function sanitizePhoneInput(input: string): string {
   return input
     .normalize('NFKC')
-    .replace(/[\u202A-\u202E]/g, '')
-    .replace(/[^\d+()\-\s.]/g, '')
+    .replace(/[^0-9+()\-. ]/g, '')
     .replace(/(?!^)\+/g, '')
     .slice(0, MAX_INPUT_LENGTH);
 }
@@ -311,7 +322,6 @@ function formatPhoneNumber(): void {
 function onPhoneInput(event: Event): void {
   const target = event.target as HTMLInputElement;
   const inputValue = sanitizePhoneInput(target.value);
-  if (inputValue.length > MAX_INPUT_LENGTH) return;
 
   const cursorPos = target.selectionStart ?? inputValue.length;
   const digitsBefore = countDigits(inputValue.slice(0, cursorPos));
@@ -528,7 +538,7 @@ function setErrorMessage(message: string): void {
 
 function checkPhoneNumberPresence(): boolean {
   if (props.required && !phoneNumber.value) {
-    setErrorMessage(props.errorMessages.required);
+    setErrorMessage(errors.value.required);
     return false;
   }
   return true;
@@ -539,17 +549,17 @@ function validatePhoneNumberFormat(): boolean {
 
   const lengthIssue = validatePhoneNumberLength(phoneNumber.value, selectedCountry.value);
   if (lengthIssue !== undefined) {
-    setErrorMessage(props.reasonMessages[lengthIssue] ?? props.errorMessages.invalid);
+    setErrorMessage(reasons.value[lengthIssue] ?? errors.value.invalid);
     return false;
   }
 
   const parsed = parse();
   if (!parsed) {
-    setErrorMessage(props.errorMessages.parse);
+    setErrorMessage(errors.value.parse);
     return false;
   }
   if (!parsed.isValid()) {
-    setErrorMessage(props.errorMessages.invalid);
+    setErrorMessage(errors.value.invalid);
     return false;
   }
   return true;
@@ -558,13 +568,13 @@ function validatePhoneNumberFormat(): boolean {
 function checkPhoneNumberType(): boolean {
   const parsed = parse();
   if (!parsed) {
-    setErrorMessage(props.errorMessages.unknown);
+    setErrorMessage(errors.value.unknown);
     return false;
   }
   const numberType = parsed.getType();
   if (numberType !== undefined && props.expectedTypes.includes(numberType)) return true;
 
-  setErrorMessage(props.errorMessages.incorrectType.replace('{types}', expectedTypesText.value));
+  setErrorMessage(fill(errors.value.incorrectType, 'types', expectedTypesText.value));
   return false;
 }
 

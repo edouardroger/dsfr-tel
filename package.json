@@ -21,6 +21,7 @@
     "test:umd": "node scripts/check-umd.cjs",
     "build:demo": "vite build --mode demo",
     "preview": "vite preview --outDir dist-demo",
+    "test:a11y": "pa11y --config pa11y.json http://127.0.0.1:4173/",
     "typecheck": "vue-tsc --noEmit -p tsconfig.json",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -36,15 +37,16 @@
     "libphonenumber-js": "^1.13.13"
   },
   "devDependencies": {
-    "@types/node": "^22.9.3",
+    "@types/node": "^26.6.4",
     "@vitejs/plugin-vue": "^6.0.9",
     "@vitest/coverage-v8": "^5.0.1",
     "@vue/test-utils": "^2.4.6",
     "axe-core": "^4.13.0",
     "jsdom": "^30.1.1",
+    "pa11y": "^10.0.0",
     "typescript": "^5.7.2",
     "vite": "^8.3.0",
-    "vite-plugin-dts": "^4.5.3",
+    "vite-plugin-dts": "^5.1.1",
     "vitest": "^5.0.1",
     "vue": "^3.5.13",
     "vue-tsc": "^3.3.11"

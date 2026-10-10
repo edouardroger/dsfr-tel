@@ -5,6 +5,29 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) ; le
 
 ## [Non publiée]
 
+### Corrections
+
+- `errorMessages` et `reasonMessages` acceptent une surcharge partielle : les clés absentes
+  reprennent les messages par défaut au lieu d'afficher un message vide.
+- Filtrage de la saisie et du collage par liste blanche stricte : retours à la ligne,
+  tabulations, séparateurs Unicode et caractères bidirectionnels sont écartés.
+- Les motifs spéciaux de `String.replace` (`$&`, `$'`…) présents dans les libellés ne sont
+  plus interprétés.
+
+### Sécurité et maintenance
+
+- Messages d'erreur et motifs par défaut regroupés en un seul endroit ; la validation
+  s'appuie sur cette structure.
+- Tests : surcharge partielle des messages et filtrage de la saisie et du collage.
+- Publication npm : construction dans un job sans jeton OIDC, publication de l'archive seule
+  depuis l'environnement protégé `npm`, déclenchement limité aux tags `v*`, npm épinglé.
+- CI : scripts d'installation désactivés, audit des dépendances de production bloquant,
+  contrôle d'accessibilité de la démonstration confié à pa11y 10 (`npm run test:a11y`,
+  configuré dans `pa11y.json`, qui remplace `.pa11yci.json`), figé dans le lockfile, à la
+  place de `pa11y-ci` téléchargé à la volée.
+- Démonstration : politique de sécurité du contenu (CSP), politique de référent, lien
+  d'évitement (RGAA 12.7).
+
 ## [1.1.1] — 2026-09-27
 
 ### Maintenance

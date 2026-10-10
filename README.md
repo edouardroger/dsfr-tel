@@ -4,6 +4,8 @@
 
 ## Qu'est-ce ?
 
+<img width="507" alt="" src="https://github.com/user-attachments/assets/fb061e18-58a4-4873-b714-df63f5e2b97a" />
+
 Dsfr-tel est un composant VueJS permettant de formater et de valider la saisie d’un numéro de téléphone (portable, fixe…) grâce à la bibliothèque Libphonenumber de Google, tout en s'inscrivant dans le système de design de l'État.
 
 Il offre notamment :
@@ -15,10 +17,6 @@ Il offre notamment :
 - la détection automatique du pays à partir du fuseau horaire (optionnelle via la prop `autoDetectCountry`).
 
 **Ce composant n'est pas proposé par le Service d'information du Gouvernement**.
-
-## [Démonstration](https://edouardroger.github.io/dsfr-tel-demo/)
-
-<img width="507" alt="" src="https://github.com/user-attachments/assets/fb061e18-58a4-4873-b714-df63f5e2b97a" />
 
 Les évolutions de chaque version sont détaillées dans [CHANGELOG.md](CHANGELOG.md).
 
@@ -437,6 +435,6 @@ sont épinglées par SHA de commit ; Dependabot (`.github/dependabot.yml`) propo
 semaine les mises à jour des actions et des dépendances npm, avec un délai de sept jours après
 publication. Sur `main`, il construit la démonstration,
 effectue un contrôle d’accessibilité automatisé (pa11y, WCAG 2.1 AA, configuré dans
-`.pa11yci.json`) et la publie sur GitHub Pages. Ce contrôle n’est bloquant que si la variable
+`pa11y.json`, lancé par `npm run test:a11y`) et la publie sur GitHub Pages. Ce contrôle n’est bloquant que si la variable
 de dépôt `PA11Y_BLOQUANT` vaut `true` (*Settings → Secrets and variables → Actions →
 Variables*) : à activer après un premier passage propre. Activation : **Settings → Pages → Source : GitHub Actions**.

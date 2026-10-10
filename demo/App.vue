@@ -1,6 +1,15 @@
 <template>
-  <main class="fr-container" id="contenu">
-    <div class="fr-grid-row fr-grid-row--center fr-grid-row--middle" style="min-height: 75vh">
+  <!-- RGAA 12.7 : lien d'évitement vers le contenu principal -->
+  <div class="fr-skiplinks">
+    <nav class="fr-container" aria-label="Accès rapide">
+      <ul class="fr-skiplinks__list">
+        <li><a class="fr-link" href="#contenu">Contenu</a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <main class="fr-container" id="contenu" tabindex="-1">
+    <div class="fr-grid-row fr-grid-row--center fr-grid-row--middle demo-hauteur">
       <div class="fr-col-12 fr-col-lg-6">
         <h1 class="fr-h4">Démonstration du paquet dsfr-tel</h1>
 
@@ -89,3 +98,10 @@ async function validatePhone(): Promise<void> {
   phoneValidCard.value?.focus();
 }
 </script>
+
+<!-- Classe plutôt qu'attribut style : compatible avec une CSP sans 'unsafe-inline'. -->
+<style scoped>
+.demo-hauteur {
+  min-height: 75vh;
+}
+</style>

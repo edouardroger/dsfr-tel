@@ -529,4 +529,43 @@ describe('DsfrTel.vue', () => {
       'Le numéro doit être de type fixe ou portable.'
     );
   });
+
+  it('complète une surcharge partielle des messages par les valeurs par défaut', async () => {
+    const wrapper = mount(DsfrTel, {
+      props: { required: true, errorMessages: { invalid: 'Numéro invalide.' } }
+    });
+    await wrapper.get(TEL).setValue('');
+    wrapper.vm.validatePhoneNumber();
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.get('.fr-message--error').text()).toBe(
+      'La saisie du numéro de téléphone est requise.'
+    );
+  });
+
+  it('ne conserve que les caractères d’un numéro au collage', async () => {
+    const wrapper = mount(DsfrTel, { props: { country: 'FR', autoDetectCountry: false } });
+    const input = wrapper.get(TEL);
+    await input.trigger('paste', {
+      clipboardData: { getData: () => '06\n12\t34\u2028 56\u202E<b>78</b>' }
+    });
+
+    expect((input.element as HTMLInputElement).value).toBe('06 12 34 56 78');
+  });
+
+  it('n’interprète pas les motifs spéciaux de remplacement dans les libellés', async () => {
+    const wrapper = mount(DsfrTel, {
+      props: {
+        country: 'FR',
+        autoDetectCountry: false,
+        labels: { types: { MOBILE: "$' $&" } },
+        expectedTypes: ['MOBILE']
+      }
+    });
+    await wrapper.get(TEL).setValue('01 23 45 67 89');
+    wrapper.vm.validatePhoneNumber();
+    await wrapper.vm.$nextTick();
+
+    expect(wrapper.get('.fr-message--error').text()).toBe("Le numéro doit être de type $' $&.");
+  });
 });

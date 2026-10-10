@@ -21,6 +21,7 @@ jobs:
   qualite:
     name: Types, tests et build de la librairie
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -31,8 +32,9 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
 
+      # Aucun paquet du lockfile ne requiert de script d'installation : on les désactive tous.
       - name: Installer les dépendances
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: Vérifier les types
         run: npm run typecheck
@@ -42,7 +44,6 @@ jobs:
 
       - name: Audit des dépendances de production
         run: npm audit --omit=dev --audit-level=high
-        continue-on-error: true
 
       - name: Construire la librairie
         run: npm run build
@@ -61,6 +62,7 @@ jobs:
     needs: qualite
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -71,7 +73,8 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
 
-      - run: npm ci
+      - name: Installer les dépendances
+        run: npm ci --ignore-scripts
 
       - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
       - name: Construire la démo
@@ -80,10 +83,14 @@ jobs:
       # Bloquant si la variable de dépôt PA11Y_BLOQUANT vaut « true ».
       - name: Contrôle d'accessibilité de la démo (pa11y)
         continue-on-error: ${{ vars.PA11Y_BLOQUANT != 'true' }}
+        # Outils figés dans le lockfile (aucun téléchargement à la volée) ; serveur et navigateur
+        # fournis par l'image du runner, le téléchargement de Chrome par Puppeteer étant désactivé.
+        env:
+          PUPPETEER_EXECUTABLE_PATH: /usr/bin/google-chrome
         run: |
-          npx --yes http-server dist-demo -p 4173 --silent &
-          npx --yes wait-on http://127.0.0.1:4173 --timeout 60000
-          npx --yes pa11y-ci --config .pa11yci.json
+          python3 -m http.server 4173 --bind 127.0.0.1 --directory dist-demo > /dev/null 2>&1 &
+          for _ in $(seq 60); do curl --silent --fail --output /dev/null http://127.0.0.1:4173/ && break; sleep 1; done
+          npm run test:a11y
 
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
@@ -93,6 +100,7 @@ jobs:
     name: Déployer sur GitHub Pages
     needs: demo
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       pages: write
       id-token: write

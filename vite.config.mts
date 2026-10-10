@@ -7,6 +7,9 @@ import dts from 'vite-plugin-dts';
 
 const EXTERNAL_LIBPHONENUMBER = /^libphonenumber-js(\/(max|min|mobile|core))?$/;
 
+/** Hôte des feuilles de style, polices, icônes et scripts du DSFR chargés par la démonstration. */
+const DSFR_CDN = 'https://cdn.jsdelivr.net';
+
 /** Remplace les métadonnées « max » par « mobile ». */
 function mobileMetadata(): Plugin {
   return {
@@ -21,6 +24,43 @@ function mobileMetadata(): Plugin {
   };
 }
 
+/**
+ * Politique de sécurité du contenu (CSP) de la démonstration construite.
+ * Build uniquement : en développement, Vite injecte des styles en ligne et un WebSocket
+ * (rechargement à chaud) que cette politique bloquerait.
+ * GitHub Pages n'autorisant pas d'en-têtes HTTP, elle est portée par une balise <meta>,
+ * placée en tête pour couvrir tous les scripts (frame-ancestors y est sans effet).
+ */
+function contentSecurityPolicy(): Plugin {
+  const policy = [
+    "default-src 'self'",
+    `script-src 'self' ${DSFR_CDN}`,
+    `style-src 'self' ${DSFR_CDN}`,
+    `font-src 'self' ${DSFR_CDN}`,
+    `img-src 'self' data: ${DSFR_CDN}`,
+    "connect-src 'self'",
+    "object-src 'none'",
+    "base-uri 'self'",
+    "form-action 'self'",
+    'upgrade-insecure-requests'
+  ].join('; ');
+
+  return {
+    name: 'dsfr-tel:csp',
+    apply: 'build',
+    transformIndexHtml: {
+      order: 'post',
+      handler: () => [
+        {
+          tag: 'meta',
+          attrs: { 'http-equiv': 'Content-Security-Policy', content: policy },
+          injectTo: 'head-prepend'
+        }
+      ]
+    }
+  };
+}
+
 // vite build               → librairie (dist/)
 // vite build --mode mobile → variante mobile (dist/mobile/)
 // vite build --mode demo   → démonstration (dist-demo/)
@@ -29,19 +69,22 @@ export default defineConfig(({ mode }) => {
   const isMobile = mode === 'mobile';
 
   return {
-    base: isDemo ? process.env.BASE_PATH ?? './' : '/',
+    base: isDemo ? (process.env.BASE_PATH ?? './') : '/',
     root: isDemo ? 'demo' : process.cwd(),
     plugins: [
       vue(),
+      ...(isDemo ? [contentSecurityPolicy()] : []),
       ...(isMobile ? [mobileMetadata()] : []),
       ...(isDemo || isMobile
         ? []
-        : [dts({
-            include: ['src/**/*.ts', 'src/**/*.vue'],
-            exclude: ['src/**/*.spec.ts'],
-            outDir: 'dist/types',
-            rollupTypes: false
-          })])
+        : [
+            dts({
+              include: ['src/**/*.ts', 'src/**/*.vue'],
+              exclude: ['src/**/*.spec.ts'],
+              outDir: 'dist/types',
+              rollupTypes: false
+            })
+          ])
     ],
     resolve: {
       alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) }
