@@ -81,6 +81,20 @@ jobs:
           retention-days: 7
           if-no-files-found: error
 
+      # Nomenclature des dépendances de production (CycloneDX), jointe à la release GitHub.
+      # npm sbom exige un node_modules complet : à garder après le npm ci de ce job.
+      - name: Générer le SBOM
+        run: |
+          npm sbom --omit=dev --sbom-format cyclonedx > sbom.cdx.json
+          sha256sum sbom.cdx.json
+
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: sbom
+          path: sbom.cdx.json
+          retention-days: 7
+          if-no-files-found: error
+
   # Seul job doté du jeton OIDC ; aucune dépendance du projet n'y est installée.
   # Environnement « npm » à protéger (relecteurs obligatoires, tags v* uniquement)
   # et à déclarer dans le Trusted Publisher sur npmjs.com.
@@ -130,17 +144,23 @@ jobs:
         with:
           persist-credentials: false
 
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: sbom
+          path: sbom
+
       - name: Créer la release à partir de la section du CHANGELOG
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -eo pipefail
           if gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
-            echo "La release $GITHUB_REF_NAME existe déjà : rien à faire."
+            echo "La release $GITHUB_REF_NAME existe déjà : mise à jour du SBOM seulement."
+            gh release upload "$GITHUB_REF_NAME" sbom/sbom.cdx.json --clobber
             exit 0
           fi
           version="${GITHUB_REF_NAME#v}"
           node scripts/changelog.mjs notes "$version" > notes.md
           flags=()
           if [[ "$version" == *-* ]]; then flags+=(--prerelease); fi
-          gh release create "$GITHUB_REF_NAME" --verify-tag --title "$version" --notes-file notes.md "${flags[@]}"
+          gh release create "$GITHUB_REF_NAME" --verify-tag --title "$version" --notes-file notes.md "${flags[@]}" sbom/sbom.cdx.json
