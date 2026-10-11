@@ -401,7 +401,7 @@ npm run check         # toutes les vérifications, comme avant une publication
 
 ## Publication
 
-La publication est automatisée (`.github/workflows/publish.yml`) par [Trusted Publishing](https://docs.npmjs.com/trusted-publishers) : aucun jeton npm n'est stocké dans le dépôt, et chaque version est accompagnée d'une attestation de provenance.
+La publication est automatisée (`.github/workflows/publish.yml`) par [Trusted Publishing](https://docs.npmjs.com/trusted-publishers) : aucun jeton npm n'est stocké dans le dépôt, et chaque version est accompagnée d'une attestation de provenance. La release GitHub de chaque version joint un SBOM (`sbom.cdx.json`, format CycloneDX) listant les dépendances de production.
 
 Au fil des modifications, décrivez-les dans la section `## [Non publiée]` en tête de `CHANGELOG.md`. Pour publier, une seule commande, dépôt à jour et sans modification en attente :
 

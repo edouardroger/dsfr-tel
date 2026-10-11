@@ -5,6 +5,11 @@ Format inspiré de [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/) ; le
 
 ## [Non publiée]
 
+### Sécurité et maintenance
+
+- Publication : un SBOM des dépendances de production (`sbom.cdx.json`, format CycloneDX)
+  est généré à chaque version et joint à la release GitHub.
+
 ## [1.1.2] — 2026-10-10
 
 ### Corrections
